@@ -6,7 +6,7 @@ export class FilterService {
   runPythonScript(db: number, sold: number): Promise<string> {
     return new Promise((resolve, reject) => {
       const scriptPath =
-        '/Users/VAF1WI/Documents/Workspace/Tutorials/XxxlDigital/product-filter-backend/src/skripts/TopMatchesSkript.py';
+        '/Users/VAF1WI/Documents/Workspace/Tutorials/XxxlDigital/product-filter-backend/src/scripts/TopMatchesSkript.py';
 
       const process = spawn('python3', [
         scriptPath,
