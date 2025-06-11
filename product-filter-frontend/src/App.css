@@ -1,0 +1,85 @@
+/* App.css */
+
+.App {
+  text-align: center; /* Centers the header text */
+  font-family: Arial, sans-serif;
+  color: #333;
+  padding: 20px;
+  background-color: #f4f7f6; /* Light background */
+  min-height: 100vh; /* Ensures the background covers the full height */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers content horizontally */
+}
+
+.App-header h1 {
+  color: #2c3e50; /* Darker heading color */
+  margin-bottom: 30px;
+}
+
+.center-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers children (input groups, button) horizontally */
+  justify-content: center; /* Centers content vertically if there's extra space */
+  background-color: #ffffff; /* White background for the main content area */
+  padding: 40px;
+  border-radius: 8px; /* Slightly rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  width: 100%; /* Take full width of its parent */
+  max-width: 400px; /* Limit max width for better appearance */
+  margin-top: 20px; /* Space from header */
+}
+
+.input-group {
+  margin-bottom: 20px; /* Space between input fields */
+  width: 100%; /* Make input group take full width of center-container */
+  text-align: left; /* Align labels and inputs to the left within their group */
+}
+
+.input-group label {
+  display: block; /* Make label appear on its own line */
+  margin-bottom: 8px; /* Space between label and input */
+  font-weight: bold;
+  color: #555;
+}
+
+.input-group input[type="number"] {
+  width: 100%; /* Make input fields take full width of their container */
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+button {
+  background-color: #3498db; /* A nice blue color */
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  margin-top: 10px; /* Space above the button */
+  width: 100%; /* Make button take full width of its container */
+  max-width: 250px; /* Limit button width for better appearance */
+}
+
+button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+}
+
+.success-message {
+  margin-top: 20px;
+  color: #27ae60; /* Green for success messages */
+  font-weight: bold;
+}
+
+.error-message {
+  margin-top: 20px;
+  color: #e74c3c; /* Red for error messages */
+  font-weight: bold;
+}

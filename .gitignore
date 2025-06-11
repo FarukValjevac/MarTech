@@ -1,0 +1,81 @@
+# --- Backend Specific Ignores ---
+# Compiled output
+product-filter-backend/dist
+product-filter-backend/node_modules
+product-filter-backend/build
+
+# Logs
+product-filter-backend/logs
+product-filter-backend/*.log
+product-filter-backend/npm-debug.log*
+product-filter-backend/pnpm-debug.log*
+product-filter-backend/yarn-debug.log*
+product-filter-backend/yarn-error.log*
+product-filter-backend/lerna-debug.log*
+
+# Tests
+product-filter-backend/coverage
+product-filter-backend/.nyc_output
+
+# IDEs and editors
+product-filter-backend/.idea
+product-filter-backend/.project
+product-filter-backend/.classpath
+product-filter-backend/.c9/
+product-filter-backend/*.launch
+product-filter-backend/.settings/
+product-filter-backend/*.sublime-workspace
+
+# IDE - VSCode
+product-filter-backend/.vscode/*
+!product-filter-backend/.vscode/settings.json
+!product-filter-backend/.vscode/tasks.json
+!product-filter-backend/.vscode/launch.json
+!product-filter-backend/.vscode/extensions.json
+
+# dotenv environment variable files
+product-filter-backend/.env
+product-filter-backend/.env.development.local
+product-filter-backend/.env.test.local
+product-filter-backend/.env.production.local
+product-filter-backend/.env.local
+
+# Temp directory
+product-filter-backend/.temp
+product-filter-backend/.tmp
+
+# Runtime data
+product-filter-backend/pids
+product-filter-backend/*.pid
+product-filter-backend/*.seed
+product-filter-backend/*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+product-filter-backend/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# --- Frontend Specific Ignores ---
+# Dependencies
+product-filter-frontend/node_modules
+product-filter-frontend/.pnp
+product-filter-frontend/.pnp.js
+
+# Testing
+product-filter-frontend/coverage
+
+# Production
+product-filter-frontend/build
+
+# dotenv environment variable files
+product-filter-frontend/.env.local
+product-filter-frontend/.env.development.local
+product-filter-frontend/.env.test.local
+product-filter-frontend/.env.production.local
+
+# Logs
+product-filter-frontend/npm-debug.log*
+product-filter-frontend/yarn-debug.log*
+product-filter-frontend/yarn-error.log*
+
+# --- Common/Global Ignores ---
+# OS
+.DS_Store
