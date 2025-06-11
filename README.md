@@ -40,7 +40,7 @@ This application uses a client-server setup with a clear separation of roles:
   - Manages potential errors from the Python script or internal server issues, sending clear error messages.
   - **Configured with CORS** to allow secure communication from the frontend (which runs on a different port).
 
-- **Python Script (`filter_script.py`):**
+- **Python Script (`TopMatchesSkript.py`):**
   - Written in Python, using the `pandas` library for efficient data handling.
   - Gets `db_threshold` and `sold_threshold` as command-line arguments from NestJS.
   - Loads two local CSV files (`product_feed_hashed.csv` and `sold_articles_hashed.csv`) from the `data` directory. These paths are relative to the script's own location, making it self-contained.
