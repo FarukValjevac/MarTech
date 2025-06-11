@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './App.css'; // Make sure this is imported for styling
+import './App.css';
 
 // Utility function to parse CSV string into an array of objects
 const parseCsv = (csvString) => {
@@ -8,12 +8,13 @@ const parseCsv = (csvString) => {
   const lines = csvString.trim().split('\n');
   if (lines.length === 0) return [];
 
-  const headers = lines[0].split(','); // Assuming comma-separated values
-  const data = lines.slice(1).map(line => {
+  const headers = lines[0].split(',');
+  // Ensure headers are trimmed and handle potential empty lines
+  const data = lines.slice(1).filter(line => line.trim() !== '').map(line => {
     const values = line.split(',');
     const row = {};
     headers.forEach((header, index) => {
-      row[header.trim()] = values[index] ? values[index].trim() : ''; // Trim header and value
+      row[header.trim()] = values[index] ? values[index].trim() : '';
     });
     return row;
   });
@@ -23,12 +24,11 @@ const parseCsv = (csvString) => {
 function App() {
   const [dbThreshold, setDbThreshold] = useState('');
   const [soldThreshold, setSoldThreshold] = useState('');
-  const [csvData, setCsvData] = useState(''); // Raw CSV string from backend
-  const [tableData, setTableData] = useState([]); // Parsed data for table rendering
+  const [csvData, setCsvData] = useState('');
+  const [tableData, setTableData] = useState([]);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
 
-  // Effect to parse CSV data whenever it changes
   useEffect(() => {
     setTableData(parseCsv(csvData));
   }, [csvData]);
@@ -36,9 +36,17 @@ function App() {
 
   const handleGenerate = async () => {
     setCsvData('');
-    setTableData([]); // Clear previous table data
-    setError('');
-    setLoading(true); // Set loading to true
+    setTableData([]);
+    setError(''); // Clear previous error messages
+    setLoading(true);
+
+    // --- NEW: Client-side validation for empty fields ---
+    if (!dbThreshold.trim() || !soldThreshold.trim()) {
+      setError('Please fill in both DB Threshold and Sold Threshold fields.');
+      setLoading(false); // Stop loading animation
+      return; // Stop the function here
+    }
+    // --- END NEW ---
 
     try {
       const response = await fetch('http://localhost:3000/filter', {
@@ -57,13 +65,13 @@ function App() {
         throw new Error(`Server responded with ${response.status}: ${errorText}`);
       }
 
-      const data = await response.text(); // This 'data' is the CSV content
-      setCsvData(data); // Store raw CSV string
+      const data = await response.text();
+      setCsvData(data);
     } catch (err) {
       console.error('Failed to fetch:', err);
       setError(`Error: ${err.message}`);
     } finally {
-      setLoading(false); // Set loading to false regardless of success or error
+      setLoading(false);
     }
   };
 
@@ -79,7 +87,7 @@ function App() {
             type="number"
             id="dbThreshold"
             value={dbThreshold}
-            onChange={(e) => setDbThreshold(e.target.value)}
+            onChange={(e) => { setDbThreshold(e.target.value); setError(''); }} // Clear error on change
             placeholder="e.g., 0.5"
           />
         </div>
@@ -89,7 +97,7 @@ function App() {
             type="number"
             id="soldThreshold"
             value={soldThreshold}
-            onChange={(e) => setSoldThreshold(e.target.value)}
+            onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }} // Clear error on change
             placeholder="e.g., 10"
           />
         </div>
@@ -100,7 +108,6 @@ function App() {
 
         {error && <p className="error-message">{error}</p>}
 
-        {/* Display the table here */}
         {loading && <p>Loading data...</p>}
         {tableData.length > 0 && !loading && (
           <div className="csv-table-container">
@@ -125,7 +132,6 @@ function App() {
             </table>
           </div>
         )}
-        {/* Optional: Show message if no data and not loading */}
         {!loading && tableData.length === 0 && csvData && <p>No data found for the given filters.</p>}
       </div>
     </div>
