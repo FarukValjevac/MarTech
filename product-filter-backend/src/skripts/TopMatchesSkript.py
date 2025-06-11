@@ -27,10 +27,23 @@ merged_df = pd.merge(product_feed, sold_articles, on='product')
 # do the wanted filter
 filtered_df = merged_df[(merged_df['db'] >= db_threshold) & (merged_df['sold'] >= db_threshold)]
 
-# sort: first by db then by sold
-sorted_df = filtered_df.sort_values(by=['db', 'sold'], ascending=[False, False])
+# sort: first by sold then by db
+sorted_df = filtered_df.sort_values(by=['sold', 'db'], ascending=[False, False])
 
 # save filtered and sorted data
 sorted_df.to_csv(output_file_path, index=False)
 
-print("All filtered data are saved in 'data/filtered_products.csv'")
+# Instead of just printing a message, print the content of the saved CSV
+try:
+    # Read the content of the newly saved CSV file
+    with open(output_file_path, 'r') as f:
+        csv_content = f.read()
+    print(csv_content, end='') # Print the CSV content to stdout
+    # Using end='' prevents adding an extra newline at the end
+
+except FileNotFoundError:
+    print(f"Error: Filtered output file not found at {output_file_path}", file=sys.stderr, flush=True)
+    sys.exit(1)
+except Exception as e:
+    print(f"Error reading filtered output file: {e}", file=sys.stderr, flush=True)
+    sys.exit(1)
