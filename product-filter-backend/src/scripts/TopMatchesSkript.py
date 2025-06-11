@@ -6,6 +6,7 @@ import os
 db_threshold = float(sys.argv[1])
 sold_threshold = int(sys.argv[2])
 
+
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # define paths
@@ -25,7 +26,7 @@ except FileNotFoundError as e:
 merged_df = pd.merge(product_feed, sold_articles, on='product')
 
 # do the wanted filter
-filtered_df = merged_df[(merged_df['db'] >= db_threshold) & (merged_df['sold'] >= db_threshold)]
+filtered_df = merged_df[(merged_df['sold'] >= sold_threshold) & (merged_df['db'] >= db_threshold)]
 
 # sort: first by sold then by db
 sorted_df = filtered_df.sort_values(by=['sold', 'db'], ascending=[False, False])
