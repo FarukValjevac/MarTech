@@ -17,19 +17,14 @@ describe('FilterService - Command & Args Test', () => {
   let service: FilterService;
 
   beforeEach(async () => {
-    // Set up the NestJS testing module to provide the FilterService
     const module: TestingModule = await Test.createTestingModule({
       providers: [FilterService],
     }).compile();
 
     service = module.get<FilterService>(FilterService);
 
-    // Reset the mock before each test to ensure test isolation
     mockSpawn.mockReset();
 
-    // Mock the behavior of the spawned process for a successful run,
-    // so the promise resolves and doesn't hang.
-    // This is a minimal mock just to allow the test to complete without errors.
     mockSpawn.mockReturnValue({
       stdout: {
         on: jest.fn(() => {
@@ -43,7 +38,7 @@ describe('FilterService - Command & Args Test', () => {
       },
       on: jest.fn((event, handler) => {
         if (event === 'close') {
-          process.nextTick(() => handler(0)); // Simulate successful exit code 0
+          process.nextTick(() => handler(0));
         }
       }),
     });
@@ -52,6 +47,7 @@ describe('FilterService - Command & Args Test', () => {
   it('should call spawn with the correct Python command, script path, and arguments', async () => {
     const mockDb = 1.23;
     const mockSold = 45;
+
     const expectedScriptPath = path.join(
       __dirname,
       '../scripts/TopMatchesSkript.py',
