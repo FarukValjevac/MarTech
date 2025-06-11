@@ -16,7 +16,7 @@ The filtering applies to local CSV files (`product_feed_hashed.csv` and `sold_ar
 
 ---
 
-## 2. How it Works (Architecture)
+## 2. How it Works
 
 This application uses a client-server setup with a clear separation of roles:
 
