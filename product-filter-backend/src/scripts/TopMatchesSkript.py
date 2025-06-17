@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import os
 
-# take arguments from the frontend
+# take arguments from the backend
 db_threshold = float(sys.argv[1])
 sold_threshold = int(sys.argv[2])
 
@@ -57,7 +57,6 @@ try:
     with open(output_file_path, 'r') as f:
         csv_content = f.read()
     print(csv_content, end='') # Print the CSV content to stdout
-    # Using end='' prevents adding an extra newline at the end
 
 except FileNotFoundError:
     print(f"Error: Filtered output file not found at {output_file_path}", file=sys.stderr, flush=True)
