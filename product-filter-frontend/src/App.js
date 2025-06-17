@@ -26,27 +26,67 @@ function App() {
   const [soldThreshold, setSoldThreshold] = useState('');
   const [csvData, setCsvData] = useState('');
   const [tableData, setTableData] = useState([]);
+  const [displayData, setDisplayData] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
-    setTableData(parseCsv(csvData));
+    const parsedData = parseCsv(csvData);
+    setTableData(parsedData);
+    setDisplayData(parsedData);
   }, [csvData]);
 
+  const handleSort = (columnKey) => {
+    let direction = 'ascending';
+    if (sortConfig.key === columnKey && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key: columnKey, direction });
+
+    const sortedData = [...displayData].sort((a, b) => {
+      // Parse values as numbers for db and sold columns
+      let aVal = a[columnKey];
+      let bVal = b[columnKey];
+      
+      if (columnKey === 'db' || columnKey === 'sold') {
+        aVal = parseFloat(aVal) || 0;
+        bVal = parseFloat(bVal) || 0;
+      }
+
+      if (aVal < bVal) {
+        return direction === 'ascending' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+
+    setDisplayData(sortedData);
+  };
+
+  const getSortIcon = (columnName) => {
+    if (sortConfig.key !== columnName) {
+      return ''; // No icon when not sorted
+    }
+    return sortConfig.direction === 'ascending' ? ' ▴' : ' ▾';
+  };
 
   const handleGenerate = async () => {
     setCsvData('');
     setTableData([]);
+    setDisplayData([]);
+    setSortConfig({ key: null, direction: null });
     setError(''); // Clear previous error messages
     setLoading(true);
 
-    // --- NEW: Client-side validation for empty fields ---
+    // Client-side validation for empty fields
     if (!dbThreshold.trim() || !soldThreshold.trim()) {
       setError('Please fill in both DB Threshold and Sold Threshold fields.');
       setLoading(false); // Stop loading animation
       return; // Stop the function here
     }
-    // --- END NEW ---
 
     try {
       const response = await fetch('http://localhost:3000/filter', {
@@ -87,7 +127,7 @@ function App() {
             type="number"
             id="dbThreshold"
             value={dbThreshold}
-            onChange={(e) => { setDbThreshold(e.target.value); setError(''); }} // Clear error on change
+            onChange={(e) => { setDbThreshold(e.target.value); setError(''); }}
             placeholder="e.g., 0.5"
           />
         </div>
@@ -97,7 +137,7 @@ function App() {
             type="number"
             id="soldThreshold"
             value={soldThreshold}
-            onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }} // Clear error on change
+            onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }}
             placeholder="e.g., 10"
           />
         </div>
@@ -109,30 +149,52 @@ function App() {
         {error && <p className="error-message">{error}</p>}
 
         {loading && <p>Loading data...</p>}
-        {tableData.length > 0 && !loading && (
+        {displayData.length > 0 && !loading && (
           <div className="csv-table-container">
-            <h2>Filtered Products:</h2>
-            <table className="csv-table">
-              <thead>
-                <tr>
-                  {Object.keys(tableData[0]).map(header => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {tableData.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {Object.values(row).map((value, colIndex) => (
-                      <td key={`${rowIndex}-${colIndex}`}>{String(value)}</td>
+            <h2>Filtered {displayData.length} Products:</h2>
+            <div className="results-info">
+              {sortConfig.key && (
+                <span className="sort-info">
+                  {' '}
+                </span>
+              )}
+            </div>
+            <div className="table-scroll-wrapper">
+              <table className="csv-table">
+                <thead>
+                  <tr>
+                    {Object.keys(displayData[0]).map(header => (
+                      <th 
+                        key={header}
+                        className={header === 'db' || header === 'sold' ? 'sortable' : ''}
+                        onClick={() => {
+                          if (header === 'db' || header === 'sold') {
+                            handleSort(header);
+                          }
+                        }}
+                      >
+                        {header}
+                        {(header === 'db' || header === 'sold') && sortConfig.key === header && (
+                          <span>{sortConfig.direction === 'ascending' ? '▴' : '▾'}</span>
+                        )}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {displayData.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {Object.values(row).map((value, colIndex) => (
+                        <td key={`${rowIndex}-${colIndex}`}>{String(value)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
-        {!loading && tableData.length === 0 && csvData && <p>No data found for the given filters.</p>}
+        {!loading && displayData.length === 0 && csvData && <p>No data found for the given filters.</p>}
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import os
 db_threshold = float(sys.argv[1])
 sold_threshold = int(sys.argv[2])
 
+# db_threshold = 6
+# sold_threshold = 50
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,6 +15,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 product_feed_path = os.path.join(script_dir, '../data/product_feed_hashed.csv')
 sold_articles_path = os.path.join(script_dir, '../data/sold_articles_hashed.csv')
 output_file_path = os.path.join(script_dir, '../data/filtered_products.csv')
+unmapped_file_path = os.path.join(script_dir, '../data/unsold_products.csv')
 
 # load the data
 try:
@@ -22,8 +25,22 @@ except FileNotFoundError as e:
     print(f"Error loading data: {e}", file=sys.stderr)
     sys.exit(1) 
 
-# merge the data on product column
-merged_df = pd.merge(product_feed, sold_articles, on='product')
+# merge the data on product column (inner join)
+merged_df = pd.merge(product_feed, sold_articles, on='product', how='inner')
+
+# Products in product_feed but not in sold_articles
+products_not_sold = product_feed[~product_feed['product'].isin(sold_articles['product'])].copy()
+products_not_sold['source'] = 'product'
+
+# Products in sold_articles but not in product_feed
+sold_not_in_feed = sold_articles[~sold_articles['product'].isin(product_feed['product'])].copy()
+sold_not_in_feed['source'] = 'sold'
+
+# Combine unmapped products
+unmapped_products = pd.concat([products_not_sold, sold_not_in_feed], ignore_index=True)
+
+# Save unmapped products to CSV
+unmapped_products.to_csv(unmapped_file_path, index=False)
 
 # do the wanted filter
 filtered_df = merged_df[(merged_df['sold'] >= sold_threshold) & (merged_df['db'] >= db_threshold)]
