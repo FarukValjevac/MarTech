@@ -157,25 +157,27 @@ function App() {
         <h1>Product Filter</h1>
       </header>
       <div className="center-container">
-        <div className="input-group">
-          <label htmlFor="dbThreshold">DB Threshold:</label>
-          <input
-            type="number"
-            id="dbThreshold"
-            value={dbThreshold}
-            onChange={(e) => { setDbThreshold(e.target.value); setError(''); }}
-            placeholder="e.g., 0.5"
-          />
-        </div>
-        <div className="input-group">
-          <label htmlFor="soldThreshold">Sold Threshold:</label>
-          <input
-            type="number"
-            id="soldThreshold"
-            value={soldThreshold}
-            onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }}
-            placeholder="e.g., 10"
-          />
+        <div className="inputs-container">
+          <div className="input-group">
+            <label htmlFor="dbThreshold">DB Threshold</label>
+            <input
+              type="number"
+              id="dbThreshold"
+              value={dbThreshold}
+              onChange={(e) => { setDbThreshold(e.target.value); setError(''); }}
+              placeholder="e.g., 0.5"
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="soldThreshold">Sold Threshold</label>
+            <input
+              type="number"
+              id="soldThreshold"
+              value={soldThreshold}
+              onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }}
+              placeholder="e.g., 10"
+            />
+          </div>
         </div>
 
         <button onClick={handleGenerate} disabled={loading}>
@@ -188,12 +190,13 @@ function App() {
         {displayData.length > 0 && !loading && (
           <div className="csv-table-container">
             <div className="table-header">
-              <h2>Filtered  {displayData.length}  {displayData.length === 1 ? 'Product' : 'Products'}</h2>
+              <h2>Filtered {displayData.length} {displayData.length === 1 ? 'Product' : 'Products'}:</h2>
               <button className="download-icon-btn" onClick={handleDownloadCSV} title="Download CSV">
                 ⬇
               </button>
             </div>
             <div className="results-info">
+              {""}
               {sortConfig.key && (
                 <span className="sort-info">
                   {' '}| Sorted by {sortConfig.key} ({sortConfig.direction})
