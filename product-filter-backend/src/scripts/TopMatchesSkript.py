@@ -15,7 +15,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 product_feed_path = os.path.join(script_dir, '../data/product_feed_hashed.csv')
 sold_articles_path = os.path.join(script_dir, '../data/sold_articles_hashed.csv')
 output_file_path = os.path.join(script_dir, '../data/filtered_products.csv')
-unmapped_file_path = os.path.join(script_dir, '../data/unsold_products.csv')
+unmapped_file_path = os.path.join(script_dir, '../data/unmapped_products.csv')
 
 # load the data
 try:

@@ -21,6 +21,27 @@ const parseCsv = (csvString) => {
   return data;
 };
 
+// Function to convert array of objects to CSV string
+const arrayToCSV = (data) => {
+  if (!data || data.length === 0) return '';
+  
+  const headers = Object.keys(data[0]);
+  const csvHeaders = headers.join(',');
+  
+  const csvRows = data.map(row => {
+    return headers.map(header => {
+      const value = row[header] || '';
+      // Escape quotes and wrap in quotes if contains comma or quotes
+      if (value.toString().includes(',') || value.toString().includes('"')) {
+        return `"${value.toString().replace(/"/g, '""')}"`;
+      }
+      return value;
+    }).join(',');
+  });
+  
+  return [csvHeaders, ...csvRows].join('\n');
+};
+
 function App() {
   const [dbThreshold, setDbThreshold] = useState('');
   const [soldThreshold, setSoldThreshold] = useState('');
@@ -115,6 +136,21 @@ function App() {
     }
   };
 
+  const handleDownloadCSV = () => {
+    const csvContent = arrayToCSV(displayData);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `filtered_products_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -151,11 +187,16 @@ function App() {
         {loading && <p>Loading data...</p>}
         {displayData.length > 0 && !loading && (
           <div className="csv-table-container">
-            <h2>Filtered {displayData.length} Products:</h2>
+            <div className="table-header">
+              <h2>Filtered  {displayData.length}  {displayData.length === 1 ? 'Product' : 'Products'}</h2>
+              <button className="download-icon-btn" onClick={handleDownloadCSV} title="Download CSV">
+                ⬇
+              </button>
+            </div>
             <div className="results-info">
               {sortConfig.key && (
                 <span className="sort-info">
-                  {' '}
+                  {' '}| Sorted by {sortConfig.key} ({sortConfig.direction})
                 </span>
               )}
             </div>

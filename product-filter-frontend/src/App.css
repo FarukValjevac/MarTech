@@ -5,7 +5,7 @@
   text-align: center;
   font-family: Arial, sans-serif;
   color: #333;
-  padding: 20px;
+  padding: 5px;
   background-color: #f4f7f6;
   min-height: 100vh;
   display: flex;
@@ -17,7 +17,7 @@
 /* --- Header Styling --- */
 .App-header h1 {
   color: #2c3e50;
-  margin-bottom: 30px;
+  margin-bottom: 5px;
 }
 
 /* --- Centering Container for Form Elements --- */
@@ -128,7 +128,7 @@ button:disabled {
 
 /* --- Scrollable Table Wrapper --- */
 .table-scroll-wrapper {
-  max-height: 400px; /* Adjust this value to show approximately 10 rows */
+  max-height: 500px; /* Increased from 400px to show more rows */
   overflow-y: auto;
   overflow-x: auto;
   border: 1px solid #e0e0e0;
@@ -207,6 +207,52 @@ button:disabled {
 .sort-info {
   color: #3498db;
   font-weight: 500;
+}
+
+/* --- Table Header with Download Button --- */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.table-header h2 {
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+/* --- Small Download Icon Button --- */
+.download-icon-btn {
+  position: absolute;
+  right: 0;
+  top: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #ffffff;
+  background-color: #28ad500b;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.download-icon-btn:hover {
+  background-color: #0a823c;
+  color: white;
+  border-color: #ffffff;
+  transform: scale(1.1);
+  
+}
+
+.download-icon-btn:active {
+  transform: scale(0.95);
 }
 
 /* --- Sortable Column Headers --- */
