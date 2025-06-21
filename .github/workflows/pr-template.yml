@@ -1,26 +1,44 @@
 name: PR Template
 on:
   pull_request:
+    types: [opened, reopened]
     branches: [main]
+
 jobs:
   add_pr_template_comment:
     name: Add PR Template Comment
-    if: github.event_name == 'pull_request' && github.event.action == 'opened' && github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Read PR template file
-        id: read_template
-        run: |
-          echo "::set-output name=content::$(cat .github/pr_template.md)"
-
       - name: Comment on PR
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const content = fs.readFileSync('.github/pr_template.md', 'utf8');
-            github.rest.issues.createComment({ issue_number: context.issue.number, owner: context.repo.owner, repo: context.repo.repo, body: content });
+
+            // Check if template comment already exists to avoid duplicates
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const templateExists = comments.data.some(comment => 
+              comment.body.includes('Make sure you go into all these steps before setting to "Ready to review"')
+            );
+
+            if (!templateExists) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: content
+              });
+            }
