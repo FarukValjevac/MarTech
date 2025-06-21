@@ -1,12 +1,14 @@
-# Product Filter Web Application
+# Product Filter & AI Web Application
 
-This project provides a simple web application to filter product data based on user-defined thresholds for "DB" (Deckungsbeitrag) and "Sold" quantities (Verkaufte Artikel). It features a React-based frontend, a NestJS backend, and a Python script for the core data processing.
+This project provides a comprehensive web application with product filtering, machine learning predictions, and an AI chatbot. It features a React-based frontend, a NestJS backend, Python ML scripts, and integration with Ollama for local AI chat functionality.
 
 ---
 
 ## 1. What it Does
 
-The web app lets users:
+The web app provides three main features:
+
+### 🔍 Product Filter
 
 - **Input two numerical thresholds**: `DB Threshold` and `Sold Threshold`.
 - **Start a data filtering process**.
@@ -15,6 +17,20 @@ The web app lets users:
 - **Download the filtered data** as a CSV file with a single click.
 
 The filtering applies to local CSV files (`product_feed_hashed.csv` and `sold_articles_hashed.csv`), saves the result to `filtered_products.csv`, and then displays it. Additionally, products without matches are saved to `unmapped_products.csv`.
+
+## Additional features
+
+### 🤖 ML Predictions
+
+- **Generate machine learning models** from your product data to predict sales based on pricing.
+- **Input product prices** to get sales predictions and revenue forecasts.
+- **Model training** uses scikit-learn with your existing product and sales data.
+
+### 💬 XXXL Chatbot
+
+- **AI-powered chatbot** using Llama3 running locally via Ollama.
+- **Real-time conversations** with persistent chat history across page navigation.
+- **Professional chat interface** with typing indicators and timestamp display.
 
 ---
 
@@ -29,9 +45,13 @@ Make sure you have these installed:
 - **Node.js (LTS version recommended)**: Get it from [nodejs.org](https://nodejs.org/).
 - **npm** (comes with Node.js) [npm.com](https://www.npmjs.com/).
 - **Python 3**: Download from [python.org/downloads](https://www.python.org/downloads/).
-- **pandas library**: Install it using pip:
+- **Python ML libraries**: Install using pip:
   ```bash
-  pip install pandas
+  pip install -r requirements.txt
+  ```
+- **Ollama** (for AI chatbot): Download from [ollama.ai](https://ollama.ai/) and install Llama3:
+  ```bash
+  ollama pull llama3
   ```
 
 ### Backend Setup (NestJS)
@@ -84,14 +104,55 @@ Make sure you have these installed:
 
 ## 3. Usage
 
-1.  Make sure both the NestJS backend and React frontend are running (`localhost:3000` and `localhost:3001`).
-2.  Open your browser and go to `http://localhost:3001`.
-3.  Enter numbers for "DB Threshold" and "Sold Threshold".
-    - **Example**: Try `7` for `DB Threshold` and `50` for `Sold Threshold`.
-4.  Click the "**Generate Filtered Data**" button.
-5.  With valid inputs, the app will talk to the backend. After processing, the filtered product data will appear as a table below the button.
+### Starting the Application
+
+1. **Start Ollama** (for chatbot functionality):
+
+   ```bash
+   ollama run llama3
+   ```
+
+2. **Start the backend** (in `product-filter-backend/`):
+
+   ```bash
+   npm run start:dev
+   ```
+
+3. **Start the frontend** (in `product-filter-frontend/`):
+
+   ```bash
+   npm start
+   ```
+
+4. Open your browser and go to `http://localhost:3001`.
+
+### Using the Features
+
+#### 🔍 Product Filter
+
+1. Navigate to the "Product Filter" tab
+2. Enter numbers for "DB Threshold" and "Sold Threshold"
+   - **Example**: Try `7` for `DB Threshold` and `50` for `Sold Threshold`
+3. Click "**Generate Filtered Data**"
+4. View and interact with the filtered results table
+
+#### 🤖 ML Predictions
+
+1. Navigate to the "ML Predictions" tab
+2. Click "**Generate Model**" to create the ML model from your data
+3. Enter a product price (e.g., `2.5`)
+4. Click "**Predict Sales**" to get sales forecasts and revenue estimates
+
+#### 💬 XXXL Chatbot
+
+1. Navigate to the "XXXL Chatbot" tab
+2. Type any question or message in the text input
+3. Press Enter or click "Send" to chat with the AI
+4. Chat history persists when switching between tabs
 
 ### Interactive Features:
+
+#### Product Filter Features:
 
 - **Sorting**: Click on the "db" or "sold" column headers to sort:
   - First click: Ascending order (▴)
@@ -103,3 +164,30 @@ Make sure you have these installed:
   - Download the currently displayed data as a CSV file
   - The download respects any sorting you've applied
   - File is automatically named with the current date (e.g., `filtered_products_2024-01-15.csv`)
+
+#### Chatbot Features:
+
+- **Persistent Chat**: Messages are saved when switching between tabs
+- **Real-time Responses**: Powered by local Llama3 model via Ollama
+- **Professional Interface**: Chat bubbles, timestamps, and typing indicators
+- **Keyboard Shortcuts**: Press Enter to send messages
+
+---
+
+## 4. Technical Architecture
+
+- **Frontend**: React with component-based architecture
+- **Backend**: NestJS with modular structure
+- **Data Processing**: Python scripts with pandas and scikit-learn
+- **AI Integration**: Ollama API for local LLM inference
+- **Data Storage**: CSV files for product and sales data
+- **ML Models**: Joblib for model persistence
+
+---
+
+## 5. API Endpoints
+
+- `GET /filter` - Product filtering
+- `GET /ml/create-model` - Generate ML model
+- `POST /ml/predict` - Get sales predictions
+- `POST /api/chatbot/chat` - Chat with AI
