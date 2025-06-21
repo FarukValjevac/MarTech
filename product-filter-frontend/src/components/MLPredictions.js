@@ -15,7 +15,7 @@ function MLPredictions() {
 
     try {
       const response = await fetch('http://localhost:3000/ml/create-model', {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -26,7 +26,6 @@ function MLPredictions() {
         throw new Error(`Server responded with ${response.status}: ${errorData}`);
       }
 
-      const data = await response.json();
       setModelStatus('Model created successfully!');
     } catch (err) {
       console.error('Failed to create model:', err);
