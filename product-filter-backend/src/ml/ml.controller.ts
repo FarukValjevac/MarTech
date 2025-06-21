@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   HttpException,
   HttpStatus,
@@ -11,7 +12,7 @@ import { MLService } from './ml.service';
 export class MLController {
   constructor(private readonly mlService: MLService) {}
 
-  @Post('create-model')
+  @Get('create-model')
   async createModel() {
     try {
       const result = await this.mlService.createModel();

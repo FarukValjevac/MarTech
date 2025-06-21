@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Simple script to make sales predictions using the saved model.
-Usage: python predict_sales.py
+Usage: python ReadModel.py 
 """
 
 import numpy as np
@@ -61,11 +61,17 @@ def main():
     print(f"Loaded model: {model_name}")
     print(f"Feature type: {feature_type}")
     
-    # Define prices to predict
-    # You can modify these values or load from a file
-    new_prices = np.array([
-        1.5,   # Below average
-    ])
+    # Get price from command line argument or use default
+    if len(sys.argv) > 1:
+        try:
+            price = float(sys.argv[1])
+            new_prices = np.array([price])
+        except ValueError:
+            print(f"Error: Invalid price '{sys.argv[1]}'. Please provide a numeric value.")
+            sys.exit(1)
+    else:
+        # Default price if none provided
+        new_prices = np.array([5])
     
     # Make predictions
     print("\nMaking predictions...")
@@ -75,19 +81,9 @@ def main():
     print("\nPrice -> Predicted Sales")
     print("-" * 50)
     
-    total_revenue = 0
-    best_revenue = 0
-    
     for price, sales in zip(new_prices, predictions):
         revenue = price * sales
-        total_revenue += revenue
-        
-        if revenue > best_revenue:
-            best_revenue = revenue
-        
         print(f"€{price:6.2f} -> {sales:8.0f} units | Revenue: ${revenue:10.2f}")
-    
-
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { spawn } from 'child_process';
+import { spawn, SpawnOptions } from 'child_process';
 import * as path from 'path';
+
+export interface PredictionOutput {
+  price: number;
+  sales: number;
+  revenue: number;
+}
 
 @Injectable()
 export class MLService {
@@ -8,24 +14,28 @@ export class MLService {
 
   createModel(): Promise<string> {
     return new Promise((resolve, reject) => {
-      const scriptPath = path.join(
-        this.scriptsPath,
-        'CreateSalesPredictionModel.py',
-      );
-      const process = spawn('python3', [scriptPath]);
+      const options: SpawnOptions = {
+        cwd: this.scriptsPath,
+      };
+      const scriptName = 'CreateSalesPredictionsModel.py';
+      const process = spawn('python3', [scriptName], options);
 
       let output = '';
       let errorOutput = '';
 
-      process.stdout.on('data', (data: Buffer) => {
-        output += data.toString();
-        console.log('Model creation output:', data.toString());
-      });
+      if (process.stdout) {
+        process.stdout.on('data', (data: Buffer) => {
+          output += data.toString();
+          console.log('Model creation output:', data.toString());
+        });
+      }
 
-      process.stderr.on('data', (err: Buffer) => {
-        errorOutput += err.toString();
-        console.error('Model creation error:', err.toString());
-      });
+      if (process.stderr) {
+        process.stderr.on('data', (err: Buffer) => {
+          errorOutput += err.toString();
+          console.error('Model creation error:', err.toString());
+        });
+      }
 
       process.on('close', (code) => {
         if (code === 0) {
@@ -47,31 +57,35 @@ export class MLService {
     });
   }
 
-  predict(price: number): Promise<any> {
+  predict(price: number): Promise<PredictionOutput | { rawOutput: string }> {
     return new Promise((resolve, reject) => {
-      const scriptPath = path.join(this.scriptsPath, 'ReadModel.py');
-      const process = spawn('python3', [scriptPath, price.toString()]);
+      const options: SpawnOptions = {
+        cwd: this.scriptsPath,
+      };
+      const scriptName = 'ReadModel.py';
+      const process = spawn('python3', [scriptName, price.toString()], options);
 
       let output = '';
       let errorOutput = '';
 
-      process.stdout.on('data', (data: Buffer) => {
-        output += data.toString();
-      });
+      if (process.stdout) {
+        process.stdout.on('data', (data: Buffer) => {
+          output += data.toString();
+        });
+      }
 
-      process.stderr.on('data', (err: Buffer) => {
-        errorOutput += err.toString();
-        console.error('Prediction error:', err.toString());
-      });
+      if (process.stderr) {
+        process.stderr.on('data', (err: Buffer) => {
+          errorOutput += err.toString();
+          console.error('Prediction error:', err.toString());
+        });
+      }
 
       process.on('close', (code) => {
         if (code === 0) {
-          // Parse the output to extract the prediction
           try {
             const lines = output.trim().split('\n');
-            let prediction = null;
-
-            // Look for the prediction line in the output
+            let prediction: PredictionOutput | null = null;
             for (const line of lines) {
               if (line.includes('->') && line.includes('units')) {
                 const match = line.match(
@@ -87,11 +101,9 @@ export class MLService {
                 }
               }
             }
-
             if (prediction) {
               resolve(prediction);
             } else {
-              // If we can't parse the output, return the raw output
               resolve({ rawOutput: output.trim() });
             }
           } catch (parseError) {
