@@ -28,20 +28,6 @@ except FileNotFoundError as e:
 # merge the data on product column (inner join)
 merged_df = pd.merge(product_feed, sold_articles, on='product', how='inner')
 
-# Products in product_feed but not in sold_articles
-products_not_sold = product_feed[~product_feed['product'].isin(sold_articles['product'])].copy()
-products_not_sold['source'] = 'product'
-
-# Products in sold_articles but not in product_feed
-sold_not_in_feed = sold_articles[~sold_articles['product'].isin(product_feed['product'])].copy()
-sold_not_in_feed['source'] = 'sold'
-
-# Combine unmapped products
-unmapped_products = pd.concat([products_not_sold, sold_not_in_feed], ignore_index=True)
-
-# Save unmapped products to CSV
-unmapped_products.to_csv(unmapped_file_path, index=False)
-
 # do the wanted filter
 filtered_df = merged_df[(merged_df['sold'] >= sold_threshold) & (merged_df['db'] >= db_threshold)]
 
@@ -50,6 +36,20 @@ sorted_df = filtered_df.sort_values(by=['sold', 'db'], ascending=[False, False])
 
 # save filtered and sorted data
 sorted_df.to_csv(output_file_path, index=False)
+
+# Products in product_feed but not in sold_articles
+products_not_in_sold = product_feed[~product_feed['product'].isin(sold_articles['product'])].copy()
+products_not_in_sold['source'] = 'product'
+
+# Products in sold_articles but not in product_feed
+sold_not_in_feed = sold_articles[~sold_articles['product'].isin(product_feed['product'])].copy()
+sold_not_in_feed['source'] = 'sold'
+
+# Combine unmapped products
+unmapped_products = pd.concat([products_not_in_sold, sold_not_in_feed], ignore_index=True)
+
+# Save unmapped products to CSV
+unmapped_products.to_csv(unmapped_file_path, index=False)
 
 # Instead of just printing a message, print the content of the saved CSV
 try:
