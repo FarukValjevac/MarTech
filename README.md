@@ -126,6 +126,34 @@ Make sure you have these installed:
 
 4. Open your browser and go to `http://localhost:3001`.
 
+## 4. Testing
+
+### Running Tests
+
+**Backend Tests:**
+
+```bash
+cd product-filter-backend
+npm test              # Unit tests
+npm run test:cov       # Test coverage
+```
+
+**Frontend Tests:**
+
+```bash
+cd product-filter-frontend
+npm test              # Component tests
+npm run test:coverage # Test coverage
+```
+
+### Test Coverage
+
+- **Controllers**: API endpoint functionality
+- **Components**: React component rendering and interactions
+- **Validation**: Form validation and error handling
+
+---
+
 ### Using the Features
 
 #### 🔍 Product Filter
@@ -174,7 +202,7 @@ Make sure you have these installed:
 
 ---
 
-## 4. Technical Architecture
+## 5. Technical Architecture
 
 - **Frontend**: React with component-based architecture
 - **Backend**: NestJS with modular structure
@@ -185,9 +213,18 @@ Make sure you have these installed:
 
 ---
 
-## 5. API Endpoints
+## 6. API Endpoints
 
-- `GET /filter` - Product filtering
+- `POST /filter` - Product filtering
 - `GET /ml/create-model` - Generate ML model
 - `POST /ml/predict` - Get sales predictions
 - `POST /api/chatbot/chat` - Chat with AI
+
+---
+
+## 7. Data Privacy & Security
+
+- **Local Processing**: All AI chat processing happens locally via Ollama
+- **Data Hashing**: Product data is pre-hashed for privacy
+- **No External APIs**: No data sent to external services
+- **CSV Storage**: Data stored locally in CSV format
