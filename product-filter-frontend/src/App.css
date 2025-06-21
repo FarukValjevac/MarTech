@@ -228,9 +228,9 @@
 }
 
 .nav-button {
-  background-color: transparent;
-  color: white;
-  border: 2px solid transparent;
+  background-color: #FF4D6B !important;
+  color: white !important;
+  border: 2px solid #FF4D6B !important;
   padding: 10px 30px;
   border-radius: 25px;
   cursor: pointer;
@@ -243,13 +243,15 @@
 }
 
 .nav-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #C50515 !important;
+  border-color: #C50515 !important;
+  box-shadow: 0 2px 8px rgba(197, 5, 21, 0.3);
 }
 
 .nav-button.active {
-  background-color: #3498db;
-  border-color: #3498db;
+  background-color: #B00413 !important;
+  border-color: #B00413 !important;
+  box-shadow: 0 2px 12px rgba(176, 4, 19, 0.4);
 }
 
 .nav-button:disabled {
@@ -324,7 +326,7 @@
 
 /* --- Button Styling --- */
 button {
-  background-color: #3498db;
+  background-color: #E10718;
   color: white;
   padding: 12px 25px;
   border: none;
@@ -340,7 +342,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background-color: #2980b9;
+  background-color: #C50515;
 }
 
 button:disabled {
