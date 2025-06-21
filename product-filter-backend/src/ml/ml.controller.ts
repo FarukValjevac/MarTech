@@ -22,8 +22,14 @@ export class MLController {
         output: result,
       };
     } catch (error) {
+      if (error instanceof Error) {
+        throw new HttpException(
+          `Failed to create model: ${error.message}`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
       throw new HttpException(
-        `Failed to create model: ${error.message}`,
+        'An unknown error occurred while creating the model.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -45,8 +51,14 @@ export class MLController {
         prediction: result,
       };
     } catch (error) {
+      if (error instanceof Error) {
+        throw new HttpException(
+          `Prediction failed: ${error.message}`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
       throw new HttpException(
-        `Prediction failed: ${error.message}`,
+        'An unknown error occurred during prediction.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
