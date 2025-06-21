@@ -228,9 +228,9 @@
 }
 
 .nav-button {
-  background-color: #FF4D6B !important;
+  background-color: #C50515 !important;
   color: white !important;
-  border: 2px solid #FF4D6B !important;
+  border: 2px solid #C50515 !important;
   padding: 10px 30px;
   border-radius: 25px;
   cursor: pointer;
@@ -244,14 +244,14 @@
 
 .nav-button:hover {
   background-color: #C50515 !important;
-  border-color: #C50515 !important;
+  border-color: white !important;
   box-shadow: 0 2px 8px rgba(197, 5, 21, 0.3);
 }
 
 .nav-button.active {
-  background-color: #B00413 !important;
-  border-color: #B00413 !important;
-  box-shadow: 0 2px 12px rgba(176, 4, 19, 0.4);
+  background-color: #9A0311 !important;
+  border-color: #9A0311 !important;
+  box-shadow: 0 2px 12px rgba(154, 3, 17, 0.4);
 }
 
 .nav-button:disabled {

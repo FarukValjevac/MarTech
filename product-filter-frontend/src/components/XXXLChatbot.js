@@ -79,8 +79,9 @@ function XXXLChatbot({ messages, setMessages }) {
         <div className="chat-messages">
           {messages.length === 0 && (
             <div className="welcome-message">
-              <p>👋 Welcome to XXXL Chatbot!</p>
-              <p>I'm powered by Llama3 running locally. Ask me anything!</p>
+              <p>Welcome to XXXL Chatbot! 🤖 </p>
+              <p>I'm powered by Llama3 running locally for data privacy. 😉</p>
+              <p>Ask me anything! 🧠</p>
             </div>
           )}
           {messages.map((message) => (
