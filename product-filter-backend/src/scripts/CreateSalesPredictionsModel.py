@@ -132,8 +132,6 @@ class ProductSalesPredictor:
         # Define models to test
         models = {
             'Linear Regression': LinearRegression(),
-            'Ridge Regression': Ridge(alpha=1.0),
-            'Lasso Regression': Lasso(alpha=0.1),
             'Random Forest': RandomForestRegressor(n_estimators=100, random_state=42),
             'Gradient Boosting': GradientBoostingRegressor(n_estimators=100, random_state=42)
         }
@@ -191,33 +189,7 @@ class ProductSalesPredictor:
         
         return results, X_train, X_test, y_train, y_test
     
-    def visualize_results(self, data, results, X_test, y_test):
-        """Create visualizations of the results."""
-        print("\nCreating visualizations...")
-        
-        # Create a single figure
-        plt.figure(figsize=(10, 8))
-        
-        # Price vs Sales scatter plot
-        plt.scatter(data['db'], data['sold'], alpha=0.5, s=50)
-        plt.xlabel('Price (db)', fontsize=12)
-        plt.ylabel('Sales Volume', fontsize=12)
-        plt.title('Price vs Sales Relationship', fontsize=14)
-        
-        # Add trend line
-        z = np.polyfit(data['db'], data['sold'], 1)
-        p = np.poly1d(z)
-        plt.plot(sorted(data['db']), p(sorted(data['db'])), "r--", alpha=0.8, linewidth=2, label=f'Trend line: y = {z[0]:.2f}x + {z[1]:.2f}')
-        
-        # Add legend
-        plt.legend()
-        
-        # Add grid for better readability
-        plt.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        plt.savefig('data/sales_prediction_analysis.png', dpi=300, bbox_inches='tight')
-        # plt.show()
+
     
     def predict_sales(self, prices):
         """
@@ -236,14 +208,6 @@ class ProductSalesPredictor:
         if len(prices.shape) == 1:
             prices = prices.reshape(-1, 1)
         
-        # Store original prices for range checking
-        original_prices = prices.flatten()
-        
-        # Get training data range
-        if not hasattr(self, 'price_range'):
-            print("Warning: price_range not set. Using default range.")
-            self.price_range = (0, 10)
-        
         min_price, max_price = self.price_range
         print(f"Training price range: [{min_price:.2f}, {max_price:.2f}]")
         
@@ -255,30 +219,6 @@ class ProductSalesPredictor:
         
         # Make predictions
         predictions = self.best_model.predict(prices_for_model)
-        
-        # Apply extrapolation logic
-        for i, price in enumerate(original_prices):
-            print(f"Price {price:.2f}: Raw prediction = {predictions[i]:.2f}", end="")
-            
-            # If price is above training range
-            if price > max_price:
-                # Option 1: Hard cutoff - if price is above max, predict 0
-                if price > max_price * 1.1:  # 10% above max
-                    predictions[i] = 0
-                    print(f" -> Adjusted to 0 (above range)")
-                else:
-                    # Gradual decay for prices just above max
-                    overshoot_ratio = (price - max_price) / max_price
-                    decay_factor = max(0, 1 - overshoot_ratio * 10)  # Aggressive decay
-                    predictions[i] = predictions[i] * decay_factor
-                    print(f" -> Adjusted to {predictions[i]:.2f} (decay factor: {decay_factor:.2f})")
-            
-            # If price is below training range
-            elif price < min_price * 0.9:  # 10% below min
-                predictions[i] = 0
-                print(f" -> Adjusted to 0 (below range)")
-            else:
-                print(" -> No adjustment needed")
         
         # Ensure non-negative predictions
         predictions = np.maximum(predictions, 0)
@@ -310,9 +250,7 @@ class ProductSalesPredictor:
         else:
             results = results_simple
             print("\nUsing simple features for final model")
-        
-        # Visualize results
-        self.visualize_results(processed_data, results, X_test, y_test)
+
         
         return results
     
@@ -333,16 +271,6 @@ class ProductSalesPredictor:
         joblib.dump(model_data, filepath)
         print(f"Model saved to {filepath}")
     
-    def load_model(self, filepath='sales_prediction_model.pkl'):
-        """Load a saved model."""
-        import joblib
-        
-        model_data = joblib.load(filepath)
-        self.best_model = model_data['model']
-        self.best_model_name = model_data['model_name']
-        self.price_range = model_data.get('price_range', (0, 10))  # Default range if not saved
-        print(f"Model loaded: {self.best_model_name}")
-        print(f"Training price range: [{self.price_range[0]:.2f}, {self.price_range[1]:.2f}]")
 
 
 # Example usage
@@ -364,4 +292,3 @@ if __name__ == "__main__":
     print("\nModel training complete!")
     print("Files created:")
     print("  - sales_prediction_model.pkl (trained model)")
-    print("  - sales_prediction_analysis.png (price vs sales visualization)")

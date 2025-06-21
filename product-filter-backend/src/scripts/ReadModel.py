@@ -71,7 +71,7 @@ def main():
             sys.exit(1)
     else:
         # Default price if none provided
-        new_prices = np.array([5])
+        new_prices = np.array([7])
     
     # Make predictions
     print("\nMaking predictions...")
@@ -82,8 +82,8 @@ def main():
     print("-" * 50)
     
     for price, sales in zip(new_prices, predictions):
-        revenue = price * sales
-        print(f"€{price:6.2f} -> {sales:8.0f} units | Revenue: ${revenue:10.2f}")
+        revenue = price * int(f"{sales:8.0f}")
+        print(f"€{price:6.2f} -> {sales:8.0f} units | Revenue: ${revenue}")
 
 if __name__ == "__main__":
     main()

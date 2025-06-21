@@ -26,7 +26,6 @@ export class MLService {
       if (process.stdout) {
         process.stdout.on('data', (data: Buffer) => {
           output += data.toString();
-          console.log('Model creation output:', data.toString());
         });
       }
 
@@ -39,7 +38,15 @@ export class MLService {
 
       process.on('close', (code) => {
         if (code === 0) {
-          resolve(output.trim());
+          const successMessage = 'Model training complete!';
+
+          if (output.includes(successMessage)) {
+            resolve(successMessage);
+          } else {
+            resolve(
+              'Model created successfully, but final message was not found.',
+            );
+          }
         } else {
           reject(
             new Error(
