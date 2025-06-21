@@ -192,7 +192,7 @@ function ProductFilter() {
               {""}
               {sortConfig.key && (
                 <span className="sort-info">
-                  {' '}| Sorted by {sortConfig.key} ({sortConfig.direction})
+                  {' '}
                 </span>
               )}
             </div>

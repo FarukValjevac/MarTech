@@ -389,11 +389,13 @@ button:disabled {
 .prediction-result {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 25px;
-  margin-top: 20px;
+  border-radius: 50px;
+  padding: 40px;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
 }
 
 .prediction-result h3 {
