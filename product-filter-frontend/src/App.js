@@ -22,7 +22,7 @@ function App() {
             className={`nav-button ${currentPage === 'ml-predictions' ? 'active' : ''}`}
             onClick={() => setCurrentPage('ml-predictions')}
           >
-            ML Predictions
+            ML Sales Predictions
           </button>
           <button 
             className={`nav-button ${currentPage === 'chatbot' ? 'active' : ''}`}

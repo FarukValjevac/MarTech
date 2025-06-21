@@ -84,7 +84,7 @@ function MLPredictions() {
   return (
     <>
       <header>
-        <h1>ML Predictions</h1>
+        <h1>ML Sales Predictions</h1>
       </header>
       <div className="center-container">
         <div className="ml-section">
