@@ -75,7 +75,7 @@ function MLPredictions() {
       }
     } catch (err) {
       console.error('Failed to get prediction:', err);
-      setError(`Error getting prediction: ${err.message}`);
+      setError(`Seems that the model is still not generated. Please generate the model.`);
     } finally {
       setLoading(false);
     }

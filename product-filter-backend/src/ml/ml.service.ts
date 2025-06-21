@@ -89,10 +89,14 @@ export class MLService {
       }
 
       process.on('close', (code) => {
+        const missingModelMessage =
+          'Please run the training script first to create the model.';
+
         if (code === 0) {
           try {
             const lines = output.trim().split('\n');
             let prediction: PredictionOutput | null = null;
+
             for (const line of lines) {
               if (line.includes('->') && line.includes('units')) {
                 const match = line.match(
@@ -108,6 +112,7 @@ export class MLService {
                 }
               }
             }
+
             if (prediction) {
               resolve(prediction);
             } else {
@@ -118,11 +123,20 @@ export class MLService {
             resolve({ rawOutput: output.trim() });
           }
         } else {
-          reject(
-            new Error(
-              `Prediction failed with code ${code}. Error: ${errorOutput}`,
-            ),
-          );
+          if (
+            errorOutput.includes(missingModelMessage) ||
+            output.includes(missingModelMessage)
+          ) {
+            reject(
+              new Error('Model not found. Please generate the model first.'),
+            );
+          } else {
+            reject(
+              new Error(
+                `Prediction failed with code ${code}. Error: ${errorOutput || output}`,
+              ),
+            );
+          }
         }
       });
 
