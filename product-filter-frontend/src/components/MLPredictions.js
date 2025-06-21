@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 
-function MLPredictions() {
+function MLPredictions({ 
+  prediction, 
+  setPrediction, 
+  modelStatus, 
+  setModelStatus, 
+  loading, 
+  setLoading, 
+  error, 
+  setError, 
+  modelCreating, 
+  setModelCreating 
+}) {
   const [price, setPrice] = useState('');
-  const [modelStatus, setModelStatus] = useState('');
-  const [prediction, setPrediction] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [modelCreating, setModelCreating] = useState(false);
 
   const handleCreateModel = async () => {
     setModelCreating(true);

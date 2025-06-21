@@ -7,6 +7,19 @@ import XXXLChatbot from './components/XXXLChatbot';
 function App() {
   const [currentPage, setCurrentPage] = useState('product-filter');
   const [chatMessages, setChatMessages] = useState([]);
+  
+  // Product Filter state
+  const [filterResults, setFilterResults] = useState([]);
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [filterError, setFilterError] = useState('');
+  const [filterCsvData, setFilterCsvData] = useState('');
+  
+  // ML Predictions state
+  const [mlPrediction, setMlPrediction] = useState(null);
+  const [mlModelStatus, setMlModelStatus] = useState('');
+  const [mlLoading, setMlLoading] = useState(false);
+  const [mlError, setMlError] = useState('');
+  const [mlModelCreating, setMlModelCreating] = useState(false);
 
   return (
     <div className="App">
@@ -34,8 +47,32 @@ function App() {
       </header>
       
       <div className="content">
-        {currentPage === 'product-filter' && <ProductFilter />}
-        {currentPage === 'ml-predictions' && <MLPredictions />}
+        {currentPage === 'product-filter' && (
+          <ProductFilter 
+            results={filterResults}
+            setResults={setFilterResults}
+            loading={filterLoading}
+            setLoading={setFilterLoading}
+            error={filterError}
+            setError={setFilterError}
+            csvData={filterCsvData}
+            setCsvData={setFilterCsvData}
+          />
+        )}
+        {currentPage === 'ml-predictions' && (
+          <MLPredictions 
+            prediction={mlPrediction}
+            setPrediction={setMlPrediction}
+            modelStatus={mlModelStatus}
+            setModelStatus={setMlModelStatus}
+            loading={mlLoading}
+            setLoading={setMlLoading}
+            error={mlError}
+            setError={setMlError}
+            modelCreating={mlModelCreating}
+            setModelCreating={setMlModelCreating}
+          />
+        )}
         {currentPage === 'chatbot' && <XXXLChatbot messages={chatMessages} setMessages={setChatMessages} />}
       </div>
     </div>

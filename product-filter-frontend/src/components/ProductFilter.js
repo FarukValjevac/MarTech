@@ -42,21 +42,15 @@ const arrayToCSV = (data) => {
   return [csvHeaders, ...csvRows].join('\n');
 };
 
-function ProductFilter() {
+function ProductFilter({ results, setResults, loading, setLoading, error, setError, csvData, setCsvData }) {
   const [dbThreshold, setDbThreshold] = useState('');
   const [soldThreshold, setSoldThreshold] = useState('');
-  const [csvData, setCsvData] = useState('');
-  const [tableData, setTableData] = useState([]);
-  const [displayData, setDisplayData] = useState([]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
     const parsedData = parseCsv(csvData);
-    setTableData(parsedData);
-    setDisplayData(parsedData);
-  }, [csvData]);
+    setResults(parsedData);
+  }, [csvData, setResults]);
 
   const handleSort = (columnKey) => {
     let direction = 'ascending';
@@ -65,7 +59,7 @@ function ProductFilter() {
     }
     setSortConfig({ key: columnKey, direction });
 
-    const sortedData = [...displayData].sort((a, b) => {
+    const sortedData = [...results].sort((a, b) => {
       // Parse values as numbers for db and sold columns
       let aVal = a[columnKey];
       let bVal = b[columnKey];
@@ -84,13 +78,12 @@ function ProductFilter() {
       return 0;
     });
 
-    setDisplayData(sortedData);
+    setResults(sortedData);
   };
 
   const handleGenerate = async () => {
     setCsvData('');
-    setTableData([]);
-    setDisplayData([]);
+    setResults([]);
     setSortConfig({ key: null, direction: null });
     setError(''); // Clear previous error messages
     setLoading(true);
@@ -130,7 +123,7 @@ function ProductFilter() {
   };
 
   const handleDownloadCSV = () => {
-    const csvContent = arrayToCSV(displayData);
+    const csvContent = arrayToCSV(results);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -180,10 +173,10 @@ function ProductFilter() {
         {error && <p className="error-message">{error}</p>}
 
         {loading && <p>Loading data...</p>}
-        {displayData.length > 0 && !loading && (
+        {results.length > 0 && !loading && (
           <div className="csv-table-container">
             <div className="table-header">
-              <h2>Filtered {displayData.length} {displayData.length === 1 ? 'Product' : 'Products'}:</h2>
+              <h2>Filtered {results.length} {results.length === 1 ? 'Product' : 'Products'}:</h2>
               <button className="download-icon-btn" onClick={handleDownloadCSV} title="Download CSV">
                 ⬇
               </button>
@@ -200,7 +193,7 @@ function ProductFilter() {
               <table className="csv-table">
                 <thead>
                   <tr>
-                    {Object.keys(displayData[0]).map(header => (
+                    {Object.keys(results[0]).map(header => (
                       <th 
                         key={header}
                         className={header === 'db' || header === 'sold' ? 'sortable' : ''}
@@ -219,7 +212,7 @@ function ProductFilter() {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayData.map((row, rowIndex) => (
+                  {results.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                       {Object.values(row).map((value, colIndex) => (
                         <td key={`${rowIndex}-${colIndex}`}>{String(value)}</td>
@@ -231,7 +224,7 @@ function ProductFilter() {
             </div>
           </div>
         )}
-        {!loading && displayData.length === 0 && csvData && <p>No data found for the given filters.</p>}
+        {!loading && results.length === 0 && csvData && <p>No data found for the given filters.</p>}
       </div>
     </>
   );
