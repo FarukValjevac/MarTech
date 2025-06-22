@@ -100,7 +100,7 @@ export class MLService {
             for (const line of lines) {
               if (line.includes('->') && line.includes('units')) {
                 const match = line.match(
-                  /€\s*([\d.]+)\s*->\s*([\d.]+)\s*units.*Revenue:\s*\$\s*([\d.]+)/,
+                  /€\s*([\d.]+)\s*->\s*([\d.]+)\s*units.*€\s*([\d.]+)/,
                 );
                 if (match) {
                   prediction = {
