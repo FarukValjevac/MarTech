@@ -151,7 +151,7 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
               id="dbThreshold"
               value={dbThreshold}
               onChange={(e) => { setDbThreshold(e.target.value); setError(''); }}
-              placeholder="e.g., 0.5"
+              placeholder="e.g., 7"
             />
           </div>
           <div className="input-group">
@@ -161,7 +161,7 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
               id="soldThreshold"
               value={soldThreshold}
               onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }}
-              placeholder="e.g., 10"
+              placeholder="e.g., 50"
             />
           </div>
         </div>

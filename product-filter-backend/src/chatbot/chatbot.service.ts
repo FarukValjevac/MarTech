@@ -16,7 +16,7 @@ export class ChatbotService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama3',
+          model: 'llama3.2',
           prompt: message,
           stream: false,
         }),
