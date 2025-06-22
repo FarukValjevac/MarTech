@@ -15,6 +15,7 @@ The web app provides three main features:
 - **View the filtered product data directly** in a structured table, just like an Excel spreadsheet.
 - **Sort the results** by clicking on the DB or Sold column headers for ascending/descending order.
 - **Download the filtered data** as a CSV file with a single click.
+- **View Charts** to analyze filtered data with interactive visualizations and pricing analytics.
 
 The filtering applies to local CSV files (`product_feed_hashed.csv` and `sold_articles_hashed.csv`), saves the result to `filtered_products.csv`, and then displays it. Additionally, products without matches are saved to `unmapped_products.csv`.
 
@@ -192,6 +193,10 @@ npm run test:coverage # Test coverage
   - Download the currently displayed data as a CSV file
   - The download respects any sorting you've applied
   - File is automatically named with the current date (e.g., `filtered_products_2024-01-15.csv`)
+- **View Charts**: Click the "View Charts" button to access interactive analytics:
+  - Visual charts and graphs of your filtered product data
+  - Pricing analytics and data insights
+  - Interactive visualizations for better data understanding
 
 #### Chatbot Features:
 

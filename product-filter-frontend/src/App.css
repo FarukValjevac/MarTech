@@ -446,3 +446,63 @@ button:disabled {
   overflow-x: auto;
   white-space: pre-wrap;
 }
+
+/* --- Charts Button Styling --- */
+.charts-button-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.view-charts-btn {
+  background: linear-gradient(135deg, #E10718, #ff4757);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(225, 7, 24, 0.3);
+  margin: 0 auto;
+  max-width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.view-charts-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(225, 7, 24, 0.4);
+  background: linear-gradient(135deg, #C50515, #E10718);
+}
+
+.view-charts-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(225, 7, 24, 0.3);
+}
+
+.view-charts-btn:disabled,
+.view-charts-btn.generating {
+  background: linear-gradient(135deg, #888, #aaa);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.view-charts-btn.generating {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
