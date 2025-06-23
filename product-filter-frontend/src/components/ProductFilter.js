@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PricingAnalytics from './PricingAnalytics';
+import '../styles/filter.css';
 
 // Utility function to parse CSV string into an array of objects
 const parseCsv = (csvString) => {
