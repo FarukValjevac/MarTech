@@ -253,7 +253,7 @@ This approach gives the mathematically correct **expected value** for a single p
 ### Implementation Details
 
 - **Model Training**: `CreateSalesPredictionsModel.py` - Trains both classification and regression models
-- **Prediction Engine**: `ReadModel.py` - Loads and uses the Two-Part model for predictions
+- **Prediction Engine**: `Predict.py` - Loads and uses the Two-Part model for predictions
 - **Model Persistence**: Joblib saves both models with metadata
 - **API Integration**: NestJS backend seamlessly integrates with the Python ML pipeline
 

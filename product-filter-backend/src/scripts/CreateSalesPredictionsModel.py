@@ -8,6 +8,7 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, a
 from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -354,85 +355,7 @@ class ProductSalesPredictor:
                 'y_test': y_test
             }
         }
-    
-    def predict_sales(self, prices):
-        """
-        Predict sales for given prices using Two-Part (Hurdle) Model.
-        
-        Args:
-            prices: Array of prices (db values)
-            
-        Returns:
-            predictions: Predicted sales volumes
-        """
-        # Use Two-Part model if available, otherwise fall back to single model
-        if self.classification_model is not None and self.regression_model is not None:
-            return self._predict_hurdle_model(prices)
-        elif self.best_model is not None:
-            return self._predict_single_model(prices)
-        else:
-            raise ValueError("No model trained yet! Call fit() first.")
-    
-    def _predict_hurdle_model(self, prices):
-        """Predict using Two-Part (Hurdle) Model."""
-        # Ensure prices is 2D array
-        if len(prices.shape) == 1:
-            prices = prices.reshape(-1, 1)
-        
-        min_price, max_price = self.price_range
-        print(f"Using Two-Part Model - Training price range: [{min_price:.2f}, {max_price:.2f}]")
-        
-        # Create enhanced features if using non-linear models
-        if (self.classification_model_name in ['Random Forest Classifier'] or 
-            self.regression_model_name in ['Random Forest', 'Gradient Boosting']):
-            prices_for_model = self.create_features(prices)
-        else:
-            prices_for_model = prices
-        
-        # Part 1: Predict if it will sell (classification)
-        will_sell_probs = self.classification_model.predict_proba(prices_for_model)[:, 1]  # Probability of selling
-        will_sell = self.classification_model.predict(prices_for_model)  # Binary prediction
-        
-        # Part 2: Predict how much it will sell (regression)
-        sales_amounts = self.regression_model.predict(prices_for_model)
-        
-        # Combine predictions: 
-        # - If classified as "will sell", use regression amount weighted by probability
-        # - Otherwise, predict 0
-        predictions = np.where(will_sell, sales_amounts * will_sell_probs, 0)
-        
-        # Ensure non-negative predictions
-        predictions = np.maximum(predictions, 0)
-        
-        # Print detailed prediction info for debugging
-        for i, price in enumerate(prices.flatten()):
-            print(f"Price {price:.2f}€: P(sell)={will_sell_probs[i]:.3f}, "
-                  f"Amount={sales_amounts[i]:.1f}, Final={predictions[i]:.1f}")
-        
-        return predictions
-    
-    def _predict_single_model(self, prices):
-        """Predict using single regression model (legacy)."""
-        # Ensure prices is 2D array
-        if len(prices.shape) == 1:
-            prices = prices.reshape(-1, 1)
-        
-        min_price, max_price = self.price_range
-        print(f"Using Single Model - Training price range: [{min_price:.2f}, {max_price:.2f}]")
-        
-        # Create enhanced features if using non-linear model
-        if self.best_model_name in ['Random Forest', 'Gradient Boosting']:
-            prices_for_model = self.create_features(prices)
-        else:
-            prices_for_model = prices
-        
-        # Make predictions
-        predictions = self.best_model.predict(prices_for_model)
-        
-        # Ensure non-negative predictions
-        predictions = np.maximum(predictions, 0)
-        
-        return predictions
+ 
     
     def fit(self):
         """Main method to load data, train models, and visualize results."""
@@ -509,7 +432,6 @@ class ProductSalesPredictor:
     
     def save_model(self, filepath='sales_prediction_model.pkl'):
         """Save the trained model(s)."""
-        import joblib
         
         # Prepare model data
         model_data = {
@@ -565,7 +487,7 @@ if __name__ == "__main__":
     results = predictor.fit()
     
     # Save the model
-    predictor.save_model('data/sales_prediction_model.pkl')
+    predictor.save_model('MLmodel/sales_prediction_model.pkl')
     
     print("\nModel training complete!")
     print("Files created:")

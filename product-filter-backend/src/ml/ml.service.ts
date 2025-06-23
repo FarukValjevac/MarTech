@@ -69,7 +69,7 @@ export class MLService {
       const options: SpawnOptions = {
         cwd: this.scriptsPath,
       };
-      const scriptName = 'ReadModel.py';
+      const scriptName = 'Predict.py';
       const process = spawn('python3', [scriptName, price.toString()], options);
 
       let output = '';

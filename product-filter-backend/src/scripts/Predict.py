@@ -3,7 +3,7 @@ import joblib
 import sys
 import os
 
-def load_model(model_path='data/sales_prediction_model.pkl'):
+def load_model(model_path='MLmodel/sales_prediction_model.pkl'):
     """Load the saved model (supports both single and Two-Part models)."""
     if not os.path.exists(model_path):
         print(f"Error: Model file '{model_path}' not found!")
