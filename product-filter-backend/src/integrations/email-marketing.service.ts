@@ -176,13 +176,13 @@ export class EmailMarketingService {
 
       const emailBody = `Hot Products Alert!
       
-Our bestsellers this period:
-${productList}
+                        Our bestsellers this period:
+                        ${productList}
 
-Don't miss out on these popular items!
+                        Don't miss out on these popular items!
 
-Best regards,
-XXXLDigital Team`;
+                        Best regards,
+                        XXXLDigital Team`;
 
       // 7. Send emails only to eligible members (duplicate prevention)
       let emailsSent = 0;

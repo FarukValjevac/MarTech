@@ -4,7 +4,7 @@ import sys
 import os
 
 def load_model(model_path='MLmodel/sales_prediction_model.pkl'):
-    """Load the saved model (supports both single and Two-Part models)."""
+    """Load the saved hurdle model."""
     if not os.path.exists(model_path):
         print(f"Error: Model file '{model_path}' not found!")
         print("Please run the training script first to create the model.")
@@ -17,19 +17,16 @@ def load_model(model_path='MLmodel/sales_prediction_model.pkl'):
         print(f"Error loading model: {e}")
         sys.exit(1)
 
-def create_features(prices, feature_type):
+def create_features(prices):
     """Create features based on the model type."""
-    if feature_type == 'enhanced':
-        # Add polynomial features
-        return np.column_stack([
-            prices,                    # Original price
-            prices**2,                # Squared price
-            np.log1p(prices),         # Log of price
-            1/np.maximum(prices, 0.1) # Inverse price
-        ])
-    return prices
+    return np.column_stack([
+        prices,                    # Original price
+        prices**2,                 # Squared price
+        np.log1p(prices),          # Log of price
+        1/np.maximum(prices, 0.1)  # Inverse price
+    ])
 
-def predict_sales_hurdle(classification_model, regression_model, prices, feature_type='simple'):
+def predict_sales(classification_model, regression_model, prices, feature_type='simple'):
     """Make predictions using Two-Part (Hurdle) Model."""
     # Ensure prices is 2D array
     if len(prices.shape) == 1:
@@ -37,7 +34,7 @@ def predict_sales_hurdle(classification_model, regression_model, prices, feature
     
     # Create features if needed
     if feature_type == 'enhanced':
-        prices_for_model = create_features(prices, feature_type)
+        prices_for_model = create_features(prices)
     else:
         prices_for_model = prices
     
@@ -56,44 +53,23 @@ def predict_sales_hurdle(classification_model, regression_model, prices, feature
     # Print detailed prediction info
     for i, price in enumerate(prices.flatten()):
         print(f"Price €{price:.2f}: P(sell)={will_sell_probs[i]:.3f}, "
-              f"Amount={sales_amounts[i]:.1f}, Expected={predictions[i]:.1f}")
+              f"Amount if sold={sales_amounts[i]:.1f}, Expected sales={predictions[i]:.1f}")
     
     return predictions
 
-def predict_sales_single(model, prices, feature_type='simple'):
-    """Make predictions using single regression model."""
-    # Ensure prices is 2D array
-    if len(prices.shape) == 1:
-        prices = prices.reshape(-1, 1)
-    
-    # Create features if needed
-    if feature_type == 'enhanced':
-        prices = create_features(prices, feature_type)
-    
-    # Make predictions
-    predictions = model.predict(prices)
-    
-    # Ensure non-negative predictions
-    return np.maximum(predictions, 0)
-
 def main():
     """Main function to run predictions."""
-    print("Advanced Sales Prediction Tool (Zero-Inflation Aware)")
-    print("=" * 60)
+    print("Sales Prediction Tool - Two-Part (Hurdle) Model")
+    print("=" * 50)
     
     # Load the model data
     model_data = load_model()
-    model_type = model_data.get('model_type', 'single')
     feature_type = model_data.get('feature_type', 'simple')
     
-    print(f"Model type: {model_type.upper()}")
+    print(f"Model type: Two-Part (Hurdle) Model")
     print(f"Feature type: {feature_type}")
-    
-    if model_type == 'hurdle':
-        print(f"Classification model: {model_data['classification_model_name']}")
-        print(f"Regression model: {model_data['regression_model_name']}")
-    else:
-        print(f"Single model: {model_data['model_name']}")
+    print(f"Classification model: {model_data['classification_model_name']}")
+    print(f"Regression model: {model_data['regression_model_name']}")
     
     # Get price from command line argument or use default
     if len(sys.argv) > 1:
@@ -105,43 +81,26 @@ def main():
             sys.exit(1)
     else:
         # Default price if none provided
-        new_prices = np.array([6])
+        new_prices = np.array([1.5])
     
-    # Make predictions based on model type
-    print(f"\nMaking predictions for price(s): {new_prices}")
-    print("-" * 40)
-    
-    if model_type == 'hurdle':
-        # Use Two-Part (Hurdle) Model
-        predictions = predict_sales_hurdle(
-            model_data['classification_model'],
-            model_data['regression_model'],
-            new_prices,
-            feature_type
-        )
-        print(f"\nUsing Two-Part (Hurdle) Model - Handles Zero-Inflation")
-    else:
-        # Use single model
-        predictions = predict_sales_single(
-            model_data['model'],
-            new_prices,
-            feature_type
-        )
-        print(f"\nUsing Single Model - May be biased by zero-inflation")
+    # Make predictions
+    print(f"\nMaking predictions for price(s): €{new_prices[0]:.2f}")
+    print("-" * 50)
+    predictions = predict_sales(
+        model_data['classification_model'],
+        model_data['regression_model'],
+        new_prices,
+        feature_type
+    )
     
     # Display final results
-    print("\n" + "=" * 60)
-    print("FINAL PREDICTIONS")
-    print("=" * 60)
-    print("Price       -> Predicted Sales    |     Estimated Revenue")
-    print("-" * 60)
+    print("\nPrice -> Predicted Sales")
+    print("-" * 50)
     
     for price, sales in zip(new_prices, predictions):
         sales_rounded = round(sales)
         revenue = price * sales_rounded
-        print(f"€{price:6.2f}     -> {sales_rounded:8.0f} units     | €{revenue:8.0f}")
-    
-    print("=" * 60)
+        print(f"€{price:6.2f} -> {sales:8.0f} units | Revenue: €{revenue:10.2f}")
 
 if __name__ == "__main__":
     main()

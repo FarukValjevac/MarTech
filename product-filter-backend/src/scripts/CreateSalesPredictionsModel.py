@@ -1,13 +1,11 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, RandomForestClassifier
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, accuracy_score, classification_report
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, accuracy_score
 from sklearn.pipeline import Pipeline
-import matplotlib.pyplot as plt
-import seaborn as sns
 import joblib
 import warnings
 warnings.filterwarnings('ignore')
@@ -35,11 +33,6 @@ class ProductSalesPredictor:
         self.regression_model = None      # Predicts sales amount (for non-zero cases)
         self.classification_model_name = None
         self.regression_model_name = None
-        
-        # Legacy single model (for comparison)
-        self.best_model = None
-        self.best_model_name = None
-        self.scaler = StandardScaler()
         
     def load_and_merge_data(self):
         """Load and merge the two CSV files on the product column."""
@@ -101,7 +94,7 @@ class ProductSalesPredictor:
         print(f"  Min: {np.min(y):.0f}")
         print(f"  Max: {np.max(y):.0f}")
         
-        return X, y, data
+        return X, y
     
     def create_features(self, X):
         """
@@ -115,91 +108,13 @@ class ProductSalesPredictor:
         """
         # Add polynomial features
         X_enhanced = np.column_stack([
-            X,                    # Original price
+            X,                   # Original price
             X**2,                # Squared price (for non-linear relationships)
             np.log1p(X),         # Log of price (for exponential relationships)
             1/np.maximum(X, 0.1) # Inverse price (for inverse relationships)
         ])
         
         return X_enhanced
-    
-    def train_models(self, X, y):
-        """
-        Train multiple models and select the best one.
-        
-        Args:
-            X: Features
-            y: Target
-            
-        Returns:
-            results: Dictionary with model performance
-        """
-        print("\nTraining models...")
-        
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
-        
-        # Define models to test
-        models = {
-            'Linear Regression': LinearRegression(),
-            'Random Forest': RandomForestRegressor(n_estimators=100, random_state=42),
-            'Gradient Boosting': GradientBoostingRegressor(n_estimators=100, random_state=42)
-        }
-        
-        results = {}
-        best_score = -np.inf
-        
-        for name, model in models.items():
-            # Create pipeline with scaling
-            pipeline = Pipeline([
-                ('scaler', StandardScaler()),
-                ('model', model)
-            ])
-            
-            # Train model
-            pipeline.fit(X_train, y_train)
-            
-            # Make predictions
-            y_pred = pipeline.predict(X_test)
-            
-            # Calculate metrics
-            mse = mean_squared_error(y_test, y_pred)
-            rmse = np.sqrt(mse)
-            mae = mean_absolute_error(y_test, y_pred)
-            r2 = r2_score(y_test, y_pred)
-            
-            # Cross-validation score
-            cv_scores = cross_val_score(pipeline, X, y, cv=5, 
-                                      scoring='neg_mean_squared_error')
-            cv_rmse = np.sqrt(-cv_scores.mean())
-            
-            results[name] = {
-                'model': pipeline,
-                'rmse': rmse,
-                'mae': mae,
-                'r2': r2,
-                'cv_rmse': cv_rmse,
-                'predictions': y_pred,
-                'y_test': y_test
-            }
-            
-            print(f"\n{name}:")
-            print(f"  RMSE: {rmse:.2f}")
-            print(f"  MAE: {mae:.2f}")
-            print(f"  R²: {r2:.3f}")
-            print(f"  CV RMSE: {cv_rmse:.2f}")
-            
-            # Track best model
-            if r2 > best_score:
-                best_score = r2
-                self.best_model = pipeline
-                self.best_model_name = name
-        
-        print(f"\nBest model: {self.best_model_name} with R² = {best_score:.3f}")
-        
-        return results, X_train, X_test, y_train, y_test
     
     def train_hurdle_model(self, X, y):
         """
@@ -270,7 +185,6 @@ class ProductSalesPredictor:
         }
         
         best_reg_score = -np.inf
-        regression_results = {}
         
         for name, model in regression_models.items():
             pipeline = Pipeline([
@@ -286,13 +200,6 @@ class ProductSalesPredictor:
             rmse = np.sqrt(mse)
             mae = mean_absolute_error(y_test_nonzero, y_pred_nonzero)
             r2 = r2_score(y_test_nonzero, y_pred_nonzero)
-            
-            regression_results[name] = {
-                'model': pipeline,
-                'rmse': rmse,
-                'mae': mae,
-                'r2': r2
-            }
             
             print(f"  {name}: RMSE = {rmse:.2f}, MAE = {mae:.2f}, R² = {r2:.3f}")
             
@@ -339,23 +246,6 @@ class ProductSalesPredictor:
             print(f"Performance on non-zero sales only:")
             print(f"  MAE: {nonzero_mae:.2f}")
             print(f"  R²: {nonzero_r2:.3f}")
-        
-        return {
-            'classification_results': {
-                'best_model': self.classification_model,
-                'best_model_name': self.classification_model_name,
-                'accuracy': best_clf_score
-            },
-            'regression_results': regression_results,
-            'combined_performance': {
-                'rmse': combined_rmse,
-                'mae': combined_mae,
-                'r2': combined_r2,
-                'predictions': y_pred_combined,
-                'y_test': y_test
-            }
-        }
- 
     
     def fit(self):
         """Main method to load data, train models, and visualize results."""
@@ -363,7 +253,7 @@ class ProductSalesPredictor:
         data = self.load_and_merge_data()
         
         # Preprocess data
-        X, y, processed_data = self.preprocess_data(data)
+        X, y = self.preprocess_data(data)
         
         # Create enhanced features for non-linear models
         X_enhanced = self.create_features(X)
@@ -375,53 +265,19 @@ class ProductSalesPredictor:
         print(f"Average sales (all products): {np.mean(y):.2f}")
         print(f"Average sales (non-zero only): {np.mean(y[y > 0]):.2f}")
         
-        # Train Two-Part (Hurdle) Model - RECOMMENDED for zero-inflation
+        # Train Two-Part (Hurdle) Model 
         print("\n" + "="*60)
-        print("TRAINING TWO-PART (HURDLE) MODEL - ZERO-INFLATION SOLUTION")
+        print("TRAINING TWO-PART (HURDLE) MODEL FOR ZERO-INFLATION HANDLING")
         print("="*60)
-        hurdle_results = self.train_hurdle_model(X_enhanced, y)
+        self.train_hurdle_model(X_enhanced, y)
         
-        # Train traditional single models for comparison
         print("\n" + "="*60)
-        print("TRAINING TRADITIONAL SINGLE MODELS - FOR COMPARISON")
+        print("MODEL TRAINING COMPLETE")
         print("="*60)
-        
-        print("\n=== Testing with simple features (price only) ===")
-        results_simple, _, _, _, _ = self.train_models(X, y)
-        
-        print("\n=== Testing with enhanced features ===")
-        results_enhanced, X_train, X_test, y_train, y_test = self.train_models(X_enhanced, y)
-        
-        # Use the better single model results for comparison
-        if max(r['r2'] for r in results_enhanced.values()) > max(r['r2'] for r in results_simple.values()):
-            single_model_results = results_enhanced
-            print("\nBest single model uses enhanced features")
-        else:
-            single_model_results = results_simple
-            print("\nBest single model uses simple features")
-        
-        # Compare performance
-        print("\n" + "="*60)
-        print("MODEL PERFORMANCE COMPARISON")
-        print("="*60)
-        
-        single_model_r2 = max(r['r2'] for r in single_model_results.values())
-        hurdle_model_r2 = hurdle_results['combined_performance']['r2']
-        
-        print(f"Single Model Best R²: {single_model_r2:.3f}")
-        print(f"Two-Part Model R²:    {hurdle_model_r2:.3f}")
-        
-        if hurdle_model_r2 > single_model_r2:
-            print("✅ Two-Part Model performs better! Using Hurdle Model.")
-            recommended_model = "hurdle"
-        else:
-            print("❌ Single Model performs better. Using Single Model.")
-            recommended_model = "single"
+        print("✅ Two-Part (Hurdle) Model trained successfully")
+        print(f"   Zero-inflation rate: {np.sum(y == 0) / len(y):.1%}")
         
         return {
-            'hurdle_results': hurdle_results,
-            'single_model_results': single_model_results,
-            'recommended_model': recommended_model,
             'data_stats': {
                 'total_products': len(y),
                 'zero_sales_count': np.sum(y == 0),
@@ -431,46 +287,31 @@ class ProductSalesPredictor:
         }
     
     def save_model(self, filepath='sales_prediction_model.pkl'):
-        """Save the trained model(s)."""
+        """Save the trained hurdle model."""
+        
+        # Check if models are trained
+        if self.classification_model is None or self.regression_model is None:
+            raise ValueError("No hurdle model available to save! Train the model first.")
         
         # Prepare model data
         model_data = {
-            'price_range': self.price_range
+            'price_range': self.price_range,
+            'model_type': 'hurdle',
+            'classification_model': self.classification_model,
+            'regression_model': self.regression_model,
+            'classification_model_name': self.classification_model_name,
+            'regression_model_name': self.regression_model_name,
+            'feature_type': 'enhanced' if (
+                self.classification_model_name in ['Random Forest Classifier'] or 
+                self.regression_model_name in ['Random Forest', 'Gradient Boosting']
+            ) else 'simple'
         }
         
-        # Save Two-Part Model if available
-        if self.classification_model is not None and self.regression_model is not None:
-            model_data.update({
-                'model_type': 'hurdle',
-                'classification_model': self.classification_model,
-                'regression_model': self.regression_model,
-                'classification_model_name': self.classification_model_name,
-                'regression_model_name': self.regression_model_name,
-                'feature_type': 'enhanced' if (
-                    self.classification_model_name in ['Random Forest Classifier'] or 
-                    self.regression_model_name in ['Random Forest', 'Gradient Boosting']
-                ) else 'simple'
-            })
-            print(f"Saving Two-Part (Hurdle) Model:")
-            print(f"  Classification: {self.classification_model_name}")
-            print(f"  Regression: {self.regression_model_name}")
-        
-        # Save single model as fallback if available
-        elif self.best_model is not None:
-            model_data.update({
-                'model_type': 'single',
-                'model': self.best_model,
-                'model_name': self.best_model_name,
-                'feature_type': 'enhanced' if self.best_model_name in ['Random Forest', 'Gradient Boosting'] else 'simple'
-            })
-            print(f"Saving Single Model: {self.best_model_name}")
-        
-        else:
-            raise ValueError("No model to save! Train the model first.")
-        
         joblib.dump(model_data, filepath)
-        print(f"Model saved to {filepath}")
-    
+        
+        print(f"\nModel saved to {filepath}")
+        print(f"  Classification: {self.classification_model_name}")
+        print(f"  Regression: {self.regression_model_name}")
 
 
 # Example usage
@@ -483,12 +324,19 @@ if __name__ == "__main__":
         sold_articles_path='../data/sold_articles_hashed.csv'
     )
     
-    # Train models
+    # Train models 
     results = predictor.fit()
     
-    # Save the model
+    # Save the hurdle model
     predictor.save_model('MLmodel/sales_prediction_model.pkl')
     
     print("\nModel training complete!")
     print("Files created:")
-    print("  - sales_prediction_model.pkl (trained model)")
+    print("  - sales_prediction_model.pkl (Two-Part Hurdle Model)")
+    
+    # Print summary
+    print(f"\nModel Summary:")
+    print(f"  Model type: Two-Part (Hurdle) Model")
+    print(f"  Zero-inflation rate: {results['data_stats']['zero_inflation_rate']:.1%}")
+    print(f"  Classification model: {predictor.classification_model_name}")
+    print(f"  Regression model: {predictor.regression_model_name}")
