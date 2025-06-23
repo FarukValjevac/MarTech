@@ -5,39 +5,42 @@ import { spawn } from 'child_process';
 export class FilterService {
   runPythonScript(db: number, sold: number): Promise<string> {
     return new Promise((resolve, reject) => {
-      const scriptPath =
-        '/Users/VAF1WI/Documents/Workspace/Tutorials/XxxlDigital/product-filter-backend/src/scripts/TopMatchesSkript.py';
+      const scriptPath = `${process.cwd()}/src/scripts/TopMatchesSkript.py`;
 
-      const process = spawn('python3', [
+      const pythonProcess = spawn('python3', [
         scriptPath,
         db.toString(),
         sold.toString(),
       ]);
 
       let output = '';
-      process.stdout.on('data', (data: Buffer) => {
+      let errorOutput = '';
+
+      pythonProcess.stdout.on('data', (data: Buffer) => {
         output += data.toString();
       });
-      process.stderr.on('data', (err: Buffer) => {
+
+      pythonProcess.stderr.on('data', (err: Buffer) => {
+        errorOutput += err.toString();
         console.error('Error from Python script:', err.toString());
       });
 
-      process.on('close', (code) => {
+      pythonProcess.on('close', (code) => {
         if (code === 0) {
           resolve(output.trim());
         } else {
           console.error(
-            `Python script exited with code ${code}. Output: ${output.trim()}`,
+            `Python script exited with code ${code}. Output: ${output.trim()}. Error: ${errorOutput}`,
           );
           reject(
             new Error(
-              `Script exited with code ${code}. Output: ${output.trim()}`,
+              `Script exited with code ${code}. Error: ${errorOutput || output.trim()}`,
             ),
           );
         }
       });
 
-      process.on('error', (err) => {
+      pythonProcess.on('error', (err) => {
         console.error('Failed to start Python subprocess:', err);
         reject(new Error(`Failed to start Python subprocess: ${err.message}`));
       });
