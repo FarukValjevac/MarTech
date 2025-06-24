@@ -6,7 +6,7 @@ import os
 db_threshold = float(sys.argv[1])
 sold_threshold = int(sys.argv[2])
 
-# db_threshold = 6
+# db_threshold = 7
 # sold_threshold = 50
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,7 +56,7 @@ try:
     # Read the content of the newly saved CSV file
     with open(output_file_path, 'r') as f:
         csv_content = f.read()
-    print(csv_content, end='') # Print the CSV content to stdout
+    print(csv_content) 
 
 except FileNotFoundError:
     print(f"Error: Filtered output file not found at {output_file_path}", file=sys.stderr, flush=True)

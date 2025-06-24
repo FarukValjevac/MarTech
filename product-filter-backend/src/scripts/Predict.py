@@ -81,7 +81,7 @@ def main():
             sys.exit(1)
     else:
         # Default price if none provided
-        new_prices = np.array([1.5])
+        new_prices = np.array([7])
     
     # Make predictions
     print(f"\nMaking predictions for price(s): €{new_prices[0]:.2f}")

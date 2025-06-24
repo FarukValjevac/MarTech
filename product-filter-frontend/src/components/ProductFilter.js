@@ -147,7 +147,7 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
     setTimeout(() => {
       setGeneratingCharts(false);
       setShowAnalytics(true);
-    }, 1500); // 1.5 seconds to simulate processing
+    }); 
   };
 
   return (

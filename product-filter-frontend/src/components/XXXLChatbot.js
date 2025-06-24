@@ -27,12 +27,16 @@ function XXXLChatbot({ messages, setMessages }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/chatbot/chat', {
+      const response = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: currentMessage }),
+               body: JSON.stringify({
+          model: 'llama3.2',
+          prompt: currentMessage,
+          stream: false,
+        }),
       });
 
       if (!response.ok) {
