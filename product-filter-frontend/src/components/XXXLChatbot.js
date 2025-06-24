@@ -27,12 +27,16 @@ function XXXLChatbot({ messages, setMessages }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/chatbot/chat', {
+      const response = await fetch('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: currentMessage }),
+               body: JSON.stringify({
+          model: 'llama3.2',
+          prompt: currentMessage,
+          stream: false,
+        }),
       });
 
       if (!response.ok) {
@@ -79,8 +83,9 @@ function XXXLChatbot({ messages, setMessages }) {
         <div className="chat-messages">
           {messages.length === 0 && (
             <div className="welcome-message">
-              <p>👋 Welcome to XXXL Chatbot!</p>
-              <p>I'm powered by Llama3 running locally. Ask me anything!</p>
+              <p>Welcome to XXXL Chatbot! 🤖 </p>
+              <p>I'm powered by Llama3 running locally for data privacy. 😉</p>
+              <p>Ask me anything! 🧠</p>
             </div>
           )}
           {messages.map((message) => (

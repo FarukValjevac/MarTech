@@ -69,7 +69,7 @@ export class MLService {
       const options: SpawnOptions = {
         cwd: this.scriptsPath,
       };
-      const scriptName = 'ReadModel.py';
+      const scriptName = 'Predict.py';
       const process = spawn('python3', [scriptName, price.toString()], options);
 
       let output = '';
@@ -100,7 +100,7 @@ export class MLService {
             for (const line of lines) {
               if (line.includes('->') && line.includes('units')) {
                 const match = line.match(
-                  /€\s*([\d.]+)\s*->\s*([\d.]+)\s*units.*Revenue:\s*\$\s*([\d.]+)/,
+                  /€\s*([\d.]+)\s*->\s*([\d.]+)\s*units.*€\s*([\d.]+)/,
                 );
                 if (match) {
                   prediction = {

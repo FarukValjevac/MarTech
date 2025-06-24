@@ -15,6 +15,7 @@ The web app provides three main features:
 - **View the filtered product data directly** in a structured table, just like an Excel spreadsheet.
 - **Sort the results** by clicking on the DB or Sold column headers for ascending/descending order.
 - **Download the filtered data** as a CSV file with a single click.
+- **View Charts** to analyze filtered data with interactive visualizations and pricing analytics.
 
 The filtering applies to local CSV files (`product_feed_hashed.csv` and `sold_articles_hashed.csv`), saves the result to `filtered_products.csv`, and then displays it. Additionally, products without matches are saved to `unmapped_products.csv`.
 
@@ -24,6 +25,7 @@ The filtering applies to local CSV files (`product_feed_hashed.csv` and `sold_ar
 
 - **Generate machine learning models** from your product data to predict sales based on pricing.
 - **Input product prices** to get sales predictions and revenue forecasts.
+- **Advanced Zero-Inflation Handling**: Uses a Two-Part (Hurdle) Model to properly handle the fact that 73% of products have zero sales.
 - **Model training** uses scikit-learn with your existing product and sales data.
 
 ### 💬 XXXL Chatbot
@@ -126,6 +128,34 @@ Make sure you have these installed:
 
 4. Open your browser and go to `http://localhost:3001`.
 
+## 4. Testing
+
+### Running Tests
+
+**Backend Tests:**
+
+```bash
+cd product-filter-backend
+npm test              # Unit tests
+npm run test:cov       # Test coverage
+```
+
+**Frontend Tests:**
+
+```bash
+cd product-filter-frontend
+npm test              # Component tests
+npm run test:coverage # Test coverage
+```
+
+### Test Coverage
+
+- **Controllers**: API endpoint functionality
+- **Components**: React component rendering and interactions
+- **Validation**: Form validation and error handling
+
+---
+
 ### Using the Features
 
 #### 🔍 Product Filter
@@ -164,6 +194,10 @@ Make sure you have these installed:
   - Download the currently displayed data as a CSV file
   - The download respects any sorting you've applied
   - File is automatically named with the current date (e.g., `filtered_products_2024-01-15.csv`)
+- **View Charts**: Click the "View Charts" button to access interactive analytics:
+  - Visual charts and graphs of your filtered product data
+  - Pricing analytics and data insights
+  - Interactive visualizations for better data understanding
 
 #### Chatbot Features:
 
@@ -174,20 +208,83 @@ Make sure you have these installed:
 
 ---
 
-## 4. Technical Architecture
+## 5. Advanced ML Implementation - Zero-Inflation Solution
+
+### The Problem: Zero-Inflation in Sales Data
+
+Traditional machine learning models struggle with real-world e-commerce data because:
+
+- **73% of products have zero sales**
+- Standard regression models become biased toward predicting very low sales
+
+### The Solution: Two-Part (Hurdle) Model
+
+This application implements a **best practice Two-Part (Hurdle) Model** to properly handle zero-inflation:
+
+#### Part 1: Classification Model
+
+- **Question**: "Will this product sell at all?"
+- **Output**: Binary prediction (0 sales vs >0 sales)
+- **Algorithm**: Random Forest Classifier
+- **Accuracy**: 73.8% on validation data
+
+#### Part 2: Regression Model
+
+- **Question**: "IF it sells, how much will it sell?"
+- **Training Data**: Only products with actual sales (>0)
+- **Algorithm**: Linear Regression with enhanced features
+- **Features**: Price, price², log(price), 1/price
+
+#### Combined Prediction Process
+
+1. **Classification**: Predict probability that product will sell
+2. **Regression**: Predict sales volume (if it sells)
+3. **Final Prediction**: `P(sell) × Predicted_Amount` (Expected Value)
+
+This approach gives the mathematically correct **expected value** for a single product: P(sell) × Amount_if_sold = Expected_units_per_product and rounded to the nearest whole number.
+
+#### Results Comparison
+
+| Price | Hurdle Model (Expected Value) |
+| ----- | ----------------------------- |
+| 1.5€  | 3 units (21.8% sell prob.)    |
+| 7.0€  | 6 units (51.9% sell prob.)    |
+
+### Implementation Details
+
+- **Model Training**: `CreateSalesPredictionsModel.py` - Trains both classification and regression models
+- **Prediction Engine**: `Predict.py` - Loads and uses the Two-Part model for predictions
+- **Model Persistence**: Joblib saves both models with metadata
+- **API Integration**: NestJS backend seamlessly integrates with the Python ML pipeline
+
+This approach provides **realistic, business-relevant predictions** that account for the high percentage of zero-sales products in real e-commerce datasets.
+
+---
+
+## 6. Technical Architecture
 
 - **Frontend**: React with component-based architecture
 - **Backend**: NestJS with modular structure
 - **Data Processing**: Python scripts with pandas and scikit-learn
+- **ML Innovation**: Two-Part (Hurdle) Model for zero-inflation handling
 - **AI Integration**: Ollama API for local LLM inference
 - **Data Storage**: CSV files for product and sales data
 - **ML Models**: Joblib for model persistence
 
 ---
 
-## 5. API Endpoints
+## 7. API Endpoints
 
-- `GET /filter` - Product filtering
+- `POST /filter` - Product filtering
 - `GET /ml/create-model` - Generate ML model
 - `POST /ml/predict` - Get sales predictions
 - `POST /api/chatbot/chat` - Chat with AI
+
+---
+
+## 8. Data Privacy & Security
+
+- **Local Processing**: All AI chat processing happens locally via Ollama
+- **Data Hashing**: Product data is pre-hashed for privacy
+- **No External APIs**: No data sent to external services
+- **CSV Storage**: Data stored locally in CSV format

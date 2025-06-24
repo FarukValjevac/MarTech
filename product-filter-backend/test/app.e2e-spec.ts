@@ -16,6 +16,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  // Test basic app health endpoint
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')

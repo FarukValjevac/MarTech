@@ -79,3 +79,6 @@ product-filter-frontend/yarn-error.log*
 # --- Common/Global Ignores ---
 # OS
 .DS_Store
+
+
+.claude

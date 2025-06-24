@@ -1,5 +1,6 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import PricingAnalytics from './PricingAnalytics';
+import '../styles/filter.css';
 
 // Utility function to parse CSV string into an array of objects
 const parseCsv = (csvString) => {
@@ -46,6 +47,8 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
   const [dbThreshold, setDbThreshold] = useState('');
   const [soldThreshold, setSoldThreshold] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [generatingCharts, setGeneratingCharts] = useState(false);
 
   useEffect(() => {
     const parsedData = parseCsv(csvData);
@@ -137,6 +140,16 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
     document.body.removeChild(link);
   };
 
+  const handleViewCharts = () => {
+    setGeneratingCharts(true);
+    
+    // Simulate chart generation time (in real app, this would be actual processing)
+    setTimeout(() => {
+      setGeneratingCharts(false);
+      setShowAnalytics(true);
+    }); 
+  };
+
   return (
     <>
       <header>
@@ -151,7 +164,7 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
               id="dbThreshold"
               value={dbThreshold}
               onChange={(e) => { setDbThreshold(e.target.value); setError(''); }}
-              placeholder="e.g., 0.5"
+              placeholder="e.g., 7"
             />
           </div>
           <div className="input-group">
@@ -161,7 +174,7 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
               id="soldThreshold"
               value={soldThreshold}
               onChange={(e) => { setSoldThreshold(e.target.value); setError(''); }}
-              placeholder="e.g., 10"
+              placeholder="e.g., 50"
             />
           </div>
         </div>
@@ -173,7 +186,7 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
         {error && <p className="error-message">{error}</p>}
 
         {loading && <p>Loading data...</p>}
-        {results.length > 0 && !loading && (
+        {results.length > 0 && (
           <div className="csv-table-container">
             <div className="table-header">
               <h2>Filtered {results.length} {results.length === 1 ? 'Product' : 'Products'}:</h2>
@@ -222,10 +235,38 @@ function ProductFilter({ results, setResults, loading, setLoading, error, setErr
                 </tbody>
               </table>
             </div>
+            
+            {/* View Charts Button - Only show when data is filtered */}
+            <div className="charts-button-container">
+              <button 
+                className={`view-charts-btn ${generatingCharts ? 'generating' : ''}`}
+                onClick={handleViewCharts}
+                disabled={generatingCharts}
+                title={generatingCharts ? "Generating charts..." : "View sweet spot pricing analytics"}
+              >
+                {generatingCharts ? (
+                  <>
+                    ⏳ Generating Charts...
+                  </>
+                ) : (
+                  <>
+                    📊 View Charts
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         )}
         {!loading && results.length === 0 && csvData && <p>No data found for the given filters.</p>}
       </div>
+      
+      {/* Analytics Modal */}
+      {showAnalytics && (
+        <PricingAnalytics 
+          data={results} 
+          onClose={() => setShowAnalytics(false)} 
+        />
+      )}
     </>
   );
 }

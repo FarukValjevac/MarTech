@@ -1,0 +1,50 @@
+# Pseudo deployment to demonstrate GCP CI/CD pipeline implementation
+
+name: Deploy to GCP
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy Backend and Frontend to Google Cloud
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+    #   - name: Set up Node.js
+    #     uses: actions/setup-node@v3
+    #     with:
+    #       node-version: "lts/*"
+
+    #   - name: Authenticate to Google Cloud
+    #     uses: google-github-actions/auth@v2
+    #     with:
+    #       credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+    #   - name: Set up Cloud SDK
+    #     uses: google-github-actions/setup-gcloud@v2
+    #     with:
+    #       project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    #   - name: Build and deploy backend
+    #     run: |
+    #       echo "Building backend..."
+    #       cd backend
+    #       npm install
+    #       npm run build
+    #       echo "Deploying backend to Cloud Run..."
+    #       # gcloud run deploy backend-service --source . --region=us-central1
+
+    #   - name: Build and deploy frontend
+    #     run: |
+    #       echo "Building frontend..."
+    #       cd frontend
+    #       npm install
+    #       npm run build
+    #       echo "Deploying frontend to Cloud Storage & CDN..."
+    #       # gsutil -m rsync -r dist gs://${{ secrets.GCP_BUCKET_NAME }}
+    #       # gcloud compute url-maps invalidate-cdn-cache cdn-name --path="/*"

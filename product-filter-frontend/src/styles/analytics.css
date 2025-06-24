@@ -1,0 +1,269 @@
+/* Analytics Overlay */
+.analytics-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.analytics-container {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 2px solid #f0f0f0;
+  background: linear-gradient(135deg, #E10718, #ff4757);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.analytics-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.analytics-content {
+  padding: 30px;
+}
+
+/* Sweet Spot Summary */
+.sweet-spot-summary {
+  margin-bottom: 30px;
+}
+
+.sweet-spot-card {
+  background: linear-gradient(135deg, #E10718, #ff4757);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.sweet-spot-card h3 {
+  margin: 0 0 15px 0;
+  font-size: 22px;
+}
+
+.sweet-spot-details {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.sweet-spot-details span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.price-range {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.sales-volume {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.product-count {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.recommendation {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 15px;
+  border-radius: 8px;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Chart Container */
+.chart-container {
+  margin-bottom: 30px;
+}
+
+.chart-container h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 20px;
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  min-height: 250px;
+  overflow-x: auto;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.bar {
+  background: linear-gradient(to top, #6c5ce7, #a29bfe);
+  width: 40px;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 5px 2px;
+}
+
+.bar.sweet-spot {
+  background: linear-gradient(to top, #E10718, #ff4757);
+  box-shadow: 0 0 15px rgba(225, 7, 24, 0.5);
+  transform: scale(1.05);
+}
+
+.bar:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+.bar-value {
+  font-size: 10px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.bar-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  transform: rotate(-45deg);
+  width: 40px;
+}
+
+/* Insights Grid */
+.analytics-insights h3 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.insight-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #E10718;
+}
+
+.insight-card h4 {
+  margin: 0 0 10px 0;
+  color: #E10718;
+  font-size: 16px;
+}
+
+.insight-card p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.insight-card strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analytics-container {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .analytics-header {
+    padding: 15px 20px;
+  }
+  
+  .analytics-header h2 {
+    font-size: 20px;
+  }
+  
+  .analytics-content {
+    padding: 20px;
+  }
+  
+  .sweet-spot-details {
+    gap: 15px;
+  }
+  
+  .price-range {
+    font-size: 24px;
+  }
+  
+  .bar-chart {
+    gap: 5px;
+    min-height: 200px;
+  }
+  
+  .bar {
+    width: 30px;
+  }
+  
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+}
