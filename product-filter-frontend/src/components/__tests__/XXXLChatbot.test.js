@@ -49,10 +49,14 @@ describe('XXXLChatbot', () => {
     fireEvent.click(sendButton);
     
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('http://localhost:3000/api/chatbot/chat', {
+      expect(fetch).toHaveBeenCalledWith('http://localhost:11434/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Hello' }),
+        body: JSON.stringify({
+          model: 'llama3.2',
+          prompt: 'Hello',
+          stream: false,
+        }),
       });
     });
 
